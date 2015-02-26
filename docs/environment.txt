@@ -1,0 +1,11 @@
+####### Cook Project Document #######
+/docs/
+
+####### Cook Android Project #######
+/android/
+
+####### Cook Appengine Project #######
+#Java Source
+/src/
+#J2EE Web Structure
+/war/

@@ -19,14 +19,37 @@
 	<welcome-file>index.jsp</welcome-file>
 	<welcome-file>index.htm</welcome-file>
 </welcome-file-list>
-<!--
+<!-- Material Management -->
 <servlet>
-	<servlet-name>JSCode</servlet-name>
-	<jsp-file>/js-code.jsp</jsp-file>
+	<servlet-name>data.GetMaterials</servlet-name>
+	<servlet-class>pada.servlet.data.GetMaterials</servlet-class>
 </servlet>
 <servlet-mapping>
-	<servlet-name>JSCode</servlet-name>
-	<url-pattern>/js/*</url-pattern>
+	<servlet-name>data.GetMaterials</servlet-name>
+	<url-pattern>/exe/data/GetMaterials</url-pattern>
 </servlet-mapping>
--->
+<servlet>
+	<servlet-name>data.CreateMaterial</servlet-name>
+	<servlet-class>pada.servlet.data.CreateMaterial</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.CreateMaterial</servlet-name>
+	<url-pattern>/exe/data/CreateMaterial</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.UpdateMaterial</servlet-name>
+	<servlet-class>pada.servlet.data.UpdateMaterial</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.UpdateMaterial</servlet-name>
+	<url-pattern>/exe/data/UpdateMaterial</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.DeleteMaterial</servlet-name>
+	<servlet-class>pada.servlet.data.DeleteMaterial</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.DeleteMaterial</servlet-name>
+	<url-pattern>/exe/data/DeleteMaterial</url-pattern>
+</servlet-mapping>
 </web-app>

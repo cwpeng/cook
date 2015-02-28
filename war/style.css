@@ -1,0 +1,30 @@
+body{
+width:1000px;margin:0px auto;font-size:15px;
+}
+.headline{
+text-align:center;font-size:1.2em;font-weight:bold;margin:10px 0px;
+}
+/* menu */
+.menu{
+float:left;width:200px;min-height:500px;
+padding-right:10px;border-right:1px dashed #888888;line-height:30px;
+}
+.menu>.title{
+font-weight:bold;
+}
+.menu>.item{
+margin-left:20px;
+}
+/* page */
+.page{
+float:right;width:750px;min-height:500px;line-height:30px;
+}
+/* input */
+input[type="text"].large{width:500px;}
+input[type="text"].medium{width:250px;}
+input[type="text"].small{width:100px;}
+input[type="text"].tiny{width:50px;}
+/* common */
+.hide{
+display:none;
+}

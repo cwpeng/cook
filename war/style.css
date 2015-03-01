@@ -1,5 +1,5 @@
 body{
-width:1000px;margin:0px auto;font-size:15px;
+width:1050px;margin:0px auto;font-size:15px;font-family:"微軟正黑體","新細明體",Arial,Helvetica,sans-serif;
 }
 .headline{
 text-align:center;font-size:1.2em;font-weight:bold;margin:10px 0px;
@@ -17,13 +17,16 @@ margin-left:20px;
 }
 /* page */
 .page{
-float:right;width:750px;min-height:500px;line-height:30px;
+float:right;width:800px;min-height:500px;line-height:30px;
 }
-/* input */
+/* form & input */
+form{padding:10px;}
 input[type="text"].large{width:500px;}
 input[type="text"].medium{width:250px;}
-input[type="text"].small{width:100px;}
-input[type="text"].tiny{width:50px;}
+input[type="text"].small{width:90px;}
+input[type="text"].tiny{width:35px;}
+input[type="number"].tiny{width:35px;}
+input[type="checkbox"]{vertical-align:middle;}
 /* common */
 .hide{
 display:none;

@@ -5,89 +5,36 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Big Cook Management System</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="all" />
-<script type="text/javascript">
-var gm={"state":{}, "data":{}, "material":{}};
-window.onload=function(){
-	gm.state.page="welcome";
-};
-gm.id=function(id){
-	return document.getElementById(id);
-};
-gm.ajax=function(args){
-	var req=new XMLHttpRequest();
-	req.onload=args.callback;
-	if(args.method.toLowerCase()=="post"){
-		req.open(args.method, args.src, true);
-		req.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		req.send(args.args);
-	}else{
-		req.open(args.method, args.src+"?"+args.args, true);
-		req.send();
-	}
-};
-gm.changePage=function(id, init){
-	gm.id(gm.state.page).style.display="none";
-	gm.id(id).style.display="block";
-	gm.state.page=id;
-	if(typeof init=="function"){
-		init();
-	}
-};
-/* Material Management */
-gm.material.create=function(form){
-	if(form.name.value==""||form.description.value==""){
-		return;
-	}
-	gm.ajax({"method":"post", "src":"/exe/data/CreateMaterial",
-		"args":"name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value),
-		"callback":function(){
-			gm.data.materials=null;
-			gm.material.get();
-		}
-	});
-};
-gm.material.get=function(){
-	if(gm.data.materials){ // Data exists
-		return;
-	}
-	// Get Data
-	gm.ajax({"method":"get", "src":"/exe/data/GetMaterials", "args":"", "callback":function(){
-		gm.data.materials=JSON.parse(this.responseText);
-		gm.material.update();
-	}});
-};
-gm.material.update=function(){
-	var list=gm.id("material-list");
-	list.innerHTML="";
-	var material;
-	for(var i=0;i<gm.data.materials.length;i++){
-		material=gm.data.materials[i];
-		list.innerHTML+=material.id+"/"+material.name+"/"+material.description+"<br/>";
-	}
-};
-</script>
+<script type="text/javascript" src="code.js"></script>
 </head>
 <body>
 <div class="headline">Big Cook Management System</div>
 <div class="menu">
 	<div class="title">Basic Data</div>
-	<div class="item" onclick="gm.changePage('material', gm.material.get);">Material</div>
-	<div class="item" onclick="gm.changePage('cookbook');">Cookbook</div>
+	<div class="item" onclick="gm.changePage('material', gm.material.init);">Material</div>
+	<div class="item" onclick="gm.changePage('cookbook', gm.cookbook.init);">Cookbook</div>
 </div>
 <div class="page" id="welcome">
 	<div>Welcome to Big Cook Management System.</div>
 </div>
 <div class="page hide" id="material">
+	<h3>Material Creation</h3>
 	<form onsubmit="gm.material.create(this);return false;">
-		Name <input type="text" name="name" class="small" /><br/>
+		Name <input type="text" name="name" class="small" />
 		Description <input type="text" name="description" class="large" /><br/>
 		<input type="submit" value="Create" />
 	</form>
-	<hr/>
+	<h3>Material List</h3>
 	<div id="material-list"></div>
 </div>
 <div class="page hide" id="cookbook">
-	<div>Welcome to Cookbook.</div>
+	<h3>Cookbook Creation</h3>
+	<form onsubmit="gm.cookbook.create(this);return false;">
+		Name <input type="text" name="name" class="small" />
+		Description <input type="text" name="description" class="large" /><br/>
+		Materials <div id="cookbook-material-list" style="border:1px solid #aaaaaa;padding:5px;"></div>
+		<input type="submit" value="Create" />
+	</form>
 </div>
 </body>
 </html>

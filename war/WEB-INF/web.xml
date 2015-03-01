@@ -37,12 +37,12 @@
 	<url-pattern>/exe/data/CreateMaterial</url-pattern>
 </servlet-mapping>
 <servlet>
-	<servlet-name>data.UpdateMaterial</servlet-name>
-	<servlet-class>pada.servlet.data.UpdateMaterial</servlet-class>
+	<servlet-name>data.ModifyMaterial</servlet-name>
+	<servlet-class>pada.servlet.data.ModifyMaterial</servlet-class>
 </servlet>
 <servlet-mapping>
-	<servlet-name>data.UpdateMaterial</servlet-name>
-	<url-pattern>/exe/data/UpdateMaterial</url-pattern>
+	<servlet-name>data.ModifyMaterial</servlet-name>
+	<url-pattern>/exe/data/ModifyMaterial</url-pattern>
 </servlet-mapping>
 <servlet>
 	<servlet-name>data.DeleteMaterial</servlet-name>

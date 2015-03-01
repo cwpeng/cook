@@ -19,6 +19,7 @@ public class Material implements java.io.Serializable{
 				Entity material=new Entity("Material");
 				material.setProperty("name", name);
 				material.setUnindexedProperty("description", description);
+				material.setProperty("cookbook", 0); // Cookbook number this material supported
 				material.setProperty("create-time", new Date());
 				datastore.put(material);
 				txn.commit();
@@ -46,7 +47,9 @@ public class Material implements java.io.Serializable{
 		try{
 			Entity entity=datastore.get(KeyFactory.createKey("Material", id));
 			return new Material(entity.getKey().getId(),
-				(String)entity.getProperty("name"), (String)entity.getProperty("description"));
+				(String)entity.getProperty("name"),
+				(String)entity.getProperty("description"),
+				((Number)entity.getProperty("cookbook")).intValue());
 		}catch(Exception e){
 			Logger.getLogger(Material.class.getName()).warning(e.toString());
 			return null;
@@ -62,7 +65,8 @@ public class Material implements java.io.Serializable{
 			for(Entity entity: entities){
 				list.add(new Material(entity.getKey().getId(),
 					(String)entity.getProperty("name"),
-					(String)entity.getProperty("description")));
+					(String)entity.getProperty("description"),
+					((Number)entity.getProperty("cookbook")).intValue()));
 			}
 			materials=list.toArray(new Material[0]);
 			cache.put("Materials", materials);
@@ -75,7 +79,10 @@ public class Material implements java.io.Serializable{
 		while(true){
 			Transaction txn=datastore.beginTransaction();
 			try{
-				datastore.delete(KeyFactory.createKey("Material", id));
+				Entity material=datastore.get(KeyFactory.createKey("Material", id));
+				if(((Number)material.getProperty("cookbook")).intValue()<1){
+					datastore.delete(material.getKey());
+				}
 				txn.commit();
 				// 清空快取
 				MemcacheServiceFactory.getMemcacheService().delete("Materials");
@@ -96,7 +103,7 @@ public class Material implements java.io.Serializable{
 			}
 		}
 	}
-	public static boolean updateMaterial(long id, String name, String description){
+	public static boolean modifyMaterial(long id, String name, String description){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
@@ -130,9 +137,11 @@ public class Material implements java.io.Serializable{
 	public long id;
 	public String name;
 	public String description;
-	public Material(long id, String name, String description){
+	public int cookbook;
+	public Material(long id, String name, String description, int cookbook){
 		this.id=id;
 		this.name=name;
 		this.description=description;
+		this.cookbook=cookbook;
 	}
 }

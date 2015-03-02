@@ -9,7 +9,6 @@ public class DeleteMaterial extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
 		// 取得並驗證使用者輸入資訊
-		long id;
 		if(request.getParameter("id")==null){
 			return;
 		}else{

@@ -120,11 +120,14 @@ gm.material.del=function(id, index){
 		}
 	});
 };
-gm.material.get=function(){
+gm.material.get=function(callback){
 	// Get Data
 	gm.ajax({"method":"get", "src":"/exe/data/GetMaterials", "args":"", "callback":function(){
 		gm.data.materials=JSON.parse(this.responseText);
 		gm.material.update();
+		if(typeof callback=="function"){
+			callback();
+		}
 	}});
 };
 gm.material.update=function(){
@@ -135,7 +138,7 @@ gm.material.update=function(){
 	var form;
 	for(var i=0;i<gm.data.materials.length;i++){
 		material=gm.data.materials[i];
-		form=gm.createElement("form", {"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}, "evts":{"submit":gm.evts.submitModifyForm}}, list);
+		form=gm.createElement("form", {"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}, "evts":{"submit":gm.evts.submitModifyMaterialForm}}, list);
 		form.materialId=material.id;
 		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+material.name+"' /> "+
 			"Description <input class='large' type='text' name='description' value='"+material.description+"' /></div>";
@@ -153,10 +156,10 @@ gm.material.update=function(){
 		if(i>0){
 			list.innerHTML+="&nbsp;&nbsp; || &nbsp;";
 		}
-		list.innerHTML+=material.name+"<input type='checkbox' name='material-"+material.id+"' /> <input type='number' value='1' min='1' max='10' step='1' class='tiny' name='material-"+material.id+"-number' />";
+		list.innerHTML+=material.name+"<input type='checkbox' name='material"+material.id+"' /> <input type='number' value='1' min='1' max='10' step='1' class='tiny' name='material"+material.id+"number' />";
 	}
 };
-	gm.evts.submitModifyForm=function(e){
+	gm.evts.submitModifyMaterialForm=function(e){
 		e.preventDefault();
 		gm.material.modify(this);
 	};
@@ -167,5 +170,79 @@ gm.cookbook.init=function(){
 	}
 };
 gm.cookbook.get=function(){
-	
+	if(!gm.data.materials){
+		gm.material.get(gm.cookbook.get);
+		return;
+	}
+	// Get Data
+	gm.ajax({"method":"get", "src":"/exe/data/GetCookbooks", "args":"", "callback":function(){
+		gm.data.cookbooks=JSON.parse(this.responseText);
+		gm.cookbook.update();
+	}});
+};
+gm.cookbook.update=function(){
+	// Update cookbook list in cookbook page
+	var list=gm.id("cookbook-list");
+	list.innerHTML="";
+	var cookbook, materials;
+	var form;
+	for(var i=0;i<gm.data.cookbooks.length;i++){
+		cookbook=gm.data.cookbooks[i];
+		form=gm.createElement("form", {"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}, "evts":{"submit":gm.evts.submitModifyCookbookForm}}, list);
+		form.cookbookId=cookbook.id;
+		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+cookbook.name+"' /> "+
+			"Description <input class='large' type='text' name='description' value='"+cookbook.description+"' /></div>";
+		materials="";
+		for(var j=0;j<cookbook.materials.length;j++){
+			if(j>0){
+				materials+="&nbsp; || ";
+			}
+			materials+=gm.cookbook.getMaterialNameById(cookbook.materials[j].id)+" <input type='number' value='"+cookbook.materials[j].number+"' min='1' max='10' step='1' class='tiny' name='material"+cookbook.materials[j].id+"number' />";
+		}
+		form.innerHTML+="<div>Materials "+materials+"</div>";
+	}
+};
+	gm.evts.submitModifyCookbookForm=function(e){
+		e.preventDefault();
+		gm.cookbook.modify(this);
+	};
+gm.cookbook.getMaterialNameById=function(id){
+	if(!gm.data.materials){
+		return null;
+	}
+	for(var i=0;i<gm.data.materials.length;i++){
+		if(gm.data.materials[i].id==id){
+			return gm.data.materials[i].name;
+		}
+	}
+	return null;
+};
+gm.cookbook.create=function(form){
+	if(form.name.value==""||form.description.value==""){
+		return;
+	}
+	var materials="";
+	var materialId;
+	for(var i=0;i<gm.data.materials.length;i++){
+		materialId=gm.data.materials[i].id;
+		if(form["material"+materialId].checked){
+			if(materials.length>0){
+				materials+=";";
+			}
+			materials+=materialId+":"+form["material"+materialId+"number"].value;
+		}
+	}
+	if(materials==""){
+		return;
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/CreateCookbook",
+		"args":"name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value)+"&materials="+materials,
+		"callback":function(){
+			alert("Created");
+			gm.data.cookbooks=null;
+			gm.cookbook.get();
+			form.reset();
+			form=null;
+		}
+	});
 };

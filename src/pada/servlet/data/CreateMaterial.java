@@ -9,7 +9,6 @@ public class CreateMaterial extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
 		// 取得並驗證使用者輸入資訊
-		String name, description;
 		if(request.getParameter("name")==null||request.getParameter("description")==null){
 			return;
 		}else{

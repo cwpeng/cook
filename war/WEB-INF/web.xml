@@ -52,4 +52,21 @@
 	<servlet-name>data.DeleteMaterial</servlet-name>
 	<url-pattern>/exe/data/DeleteMaterial</url-pattern>
 </servlet-mapping>
+<!-- Cookbook Management -->
+<servlet>
+	<servlet-name>data.GetCookbooks</servlet-name>
+	<servlet-class>pada.servlet.data.GetCookbooks</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GetCookbooks</servlet-name>
+	<url-pattern>/exe/data/GetCookbooks</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.CreateCookbook</servlet-name>
+	<servlet-class>pada.servlet.data.CreateCookbook</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.CreateCookbook</servlet-name>
+	<url-pattern>/exe/data/CreateCookbook</url-pattern>
+</servlet-mapping>
 </web-app>

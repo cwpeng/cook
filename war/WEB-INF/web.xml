@@ -69,4 +69,20 @@
 	<servlet-name>data.CreateCookbook</servlet-name>
 	<url-pattern>/exe/data/CreateCookbook</url-pattern>
 </servlet-mapping>
+<servlet>
+	<servlet-name>data.ModifyCookbook</servlet-name>
+	<servlet-class>pada.servlet.data.ModifyCookbook</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.ModifyCookbook</servlet-name>
+	<url-pattern>/exe/data/ModifyCookbook</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.DeleteCookbook</servlet-name>
+	<servlet-class>pada.servlet.data.DeleteCookbook</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.DeleteCookbook</servlet-name>
+	<url-pattern>/exe/data/DeleteCookbook</url-pattern>
+</servlet-mapping>
 </web-app>

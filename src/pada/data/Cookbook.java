@@ -80,6 +80,73 @@ public class Cookbook implements java.io.Serializable{
 		}
 		return cookbooks;
 	}
+	public static boolean deleteCookbook(long id){
+		int retries=1;
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		while(true){
+			Transaction txn=datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+			try{
+				Entity cookbook=datastore.get(KeyFactory.createKey("Cookbook", id));
+				long[][] materials=(long[][])Data.fromBytes(((ShortBlob)cookbook.getProperty("materials")).getBytes());
+				Entity material;
+				for(int i=0;i<materials.length;i++){
+					material=datastore.get(KeyFactory.createKey("Material", materials[i][0]));
+					material.setProperty("cookbook", ((Number)material.getProperty("cookbook")).intValue()-1);
+					datastore.put(material);
+				}
+				datastore.delete(cookbook.getKey());
+				txn.commit();
+				// 清空快取
+				MemcacheServiceFactory.getMemcacheService().delete("Materials");
+				MemcacheServiceFactory.getMemcacheService().delete("Cookbooks");
+				return true;
+			}catch(ConcurrentModificationException e){
+				if(retries==0){
+					Logger.getLogger(Material.class.getName()).warning(e.toString());
+					return false;
+				}
+				retries--;
+			}catch(Exception e){
+				Logger.getLogger(Material.class.getName()).warning(e.toString());
+				return false;
+			}finally{
+				if(txn.isActive()){
+					txn.rollback();
+				}
+			}
+		}
+	}
+	public static boolean modifyCookbook(long id, String name, String description, long[][] materials){
+		int retries=1;
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		while(true){
+			Transaction txn=datastore.beginTransaction();
+			try{
+				Entity cookbook=datastore.get(KeyFactory.createKey("Cookbook", id));
+				cookbook.setProperty("name", name);
+				cookbook.setUnindexedProperty("description", description);
+				cookbook.setProperty("materials", new ShortBlob(Data.toBytes(materials)));
+				datastore.put(cookbook);
+				txn.commit();
+				// 清空快取
+				MemcacheServiceFactory.getMemcacheService().delete("Cookbooks");
+				return true;
+			}catch(ConcurrentModificationException e){
+				if(retries==0){
+					Logger.getLogger(Material.class.getName()).warning(e.toString());
+					return false;
+				}
+				retries--;
+			}catch(Exception e){
+				Logger.getLogger(Material.class.getName()).warning(e.toString());
+				return false;
+			}finally{
+				if(txn.isActive()){
+					txn.rollback();
+				}
+			}
+		}
+	}
 	// Instance Definition
 	public long id;
 	public String name;

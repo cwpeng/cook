@@ -200,23 +200,24 @@ gm.cookbook.update=function(){
 			materials+=gm.cookbook.getMaterialNameById(cookbook.materials[j].id)+" <input type='number' value='"+cookbook.materials[j].number+"' min='1' max='10' step='1' class='tiny' name='material"+cookbook.materials[j].id+"number' />";
 		}
 		form.innerHTML+="<div>Materials "+materials+"</div>";
+		form.innerHTML+="<div><input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.cookbook.del("+cookbook.id+", "+i+");' /></div>";
 	}
 };
+	gm.cookbook.getMaterialNameById=function(id){
+		if(!gm.data.materials){
+			return null;
+		}
+		for(var i=0;i<gm.data.materials.length;i++){
+			if(gm.data.materials[i].id==id){
+				return gm.data.materials[i].name;
+			}
+		}
+		return null;
+	};
 	gm.evts.submitModifyCookbookForm=function(e){
 		e.preventDefault();
 		gm.cookbook.modify(this);
 	};
-gm.cookbook.getMaterialNameById=function(id){
-	if(!gm.data.materials){
-		return null;
-	}
-	for(var i=0;i<gm.data.materials.length;i++){
-		if(gm.data.materials[i].id==id){
-			return gm.data.materials[i].name;
-		}
-	}
-	return null;
-};
 gm.cookbook.create=function(form){
 	if(form.name.value==""||form.description.value==""){
 		return;
@@ -243,6 +244,42 @@ gm.cookbook.create=function(form){
 			gm.cookbook.get();
 			form.reset();
 			form=null;
+		}
+	});
+};
+gm.cookbook.modify=function(form){
+	if(form.name.value==""||form.description.value==""){
+		return;
+	}
+	var materials="";
+	var materialId;
+	for(var i=0;i<gm.data.materials.length;i++){
+		materialId=gm.data.materials[i].id;
+		if(form["material"+materialId+"number"]){
+			if(materials.length>0){
+				materials+=";";
+			}
+			materials+=materialId+":"+form["material"+materialId+"number"].value;
+		}
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/ModifyCookbook",
+		"args":"id="+form.cookbookId+"&name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value)+"&materials="+materials,
+		"callback":function(){
+			alert("Modified");
+		}
+	});
+};
+gm.cookbook.del=function(id, index){
+	if(!confirm("Are you sure?")){
+		return;
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/DeleteCookbook",
+		"args":"id="+id,
+		"callback":function(){
+			alert("Deleted");
+			gm.data.cookbooks.splice(index, 1);
+			gm.cookbook.update();
+			index=null;
 		}
 	});
 };

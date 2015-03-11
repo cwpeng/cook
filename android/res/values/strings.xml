@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Start</string>
+	<string name="google_map_api_key">AIzaSyAueW1x2FK3Mxg0cHO56Bhmz67_ogVzZlU</string>
+    <string name="app_name">Big Cook</string>
 </resources>

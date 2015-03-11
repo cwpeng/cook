@@ -2,6 +2,7 @@ package biz.pada.cook;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.DialogFragment;
 import android.app.Dialog;
+import android.view.View;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.IntentSender.SendIntentException;
@@ -26,7 +27,12 @@ public class Start extends FragmentActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.main);
+		this.setContentView(R.layout.start);
+		this.findViewById(R.id.start).setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v){
+				Start.this.startActivity(new Intent(Start.this, Main.class));
+			}
+		});
 		this.google=new GoogleApiClient.Builder(this)
 			.addConnectionCallbacks(this)
 			.addOnConnectionFailedListener(this)

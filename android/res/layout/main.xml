@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/map"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/main"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:name="com.google.android.gms.maps.MapFragment"/>
+	android:layout_height="match_parent">
+	<fragment xmlns:android="http://schemas.android.com/apk/res/android" xmlns:map="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/map"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:name="com.google.android.gms.maps.MapFragment"
+		map:cameraZoom="16" />
+	<LinearLayout android:id="@+id/menu"
+		android:layout_width="match_parent"
+		android:layout_height="65dp"
+		android:layout_gravity="bottom"
+		android:weightSum="2"
+		android:orientation="horizontal"
+		android:background="@color/menu_background">
+		<LinearLayout android:id="@+id/profile"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:orientation="vertical">
+			<ImageView
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				android:paddingTop="4dp"
+				android:src="@drawable/profile" />
+			<TextView
+				android:layout_width="36dp"
+				android:layout_height="25dp"
+				android:text="Profile" />
+		</LinearLayout>
+		<LinearLayout android:id="@+id/store"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:orientation="vertical">
+			<ImageView
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				android:paddingTop="4dp"
+				android:src="@drawable/store" />
+			<TextView
+				android:layout_width="36dp"
+				android:layout_height="25dp"
+				android:text="Store" />
+		</LinearLayout>
+	</LinearLayout>
+</FrameLayout>

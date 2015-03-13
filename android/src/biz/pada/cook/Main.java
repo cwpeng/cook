@@ -2,7 +2,10 @@ package biz.pada.cook;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.view.View;
+import android.view.animation.*;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.IntentSender.SendIntentException;
@@ -51,7 +54,59 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 		MapFragment mapFragment=(MapFragment)this.getFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 		this.hideSystemUI(this.findViewById(R.id.main));
+		// Menu Initialize
+		this.findViewById(R.id.menu_trigger).setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v){
+				Main.this.slideinMenu();
+			}
+		});
+		this.findViewById(R.id.invisible_focusable_btn).setOnFocusChangeListener(new View.OnFocusChangeListener(){
+			public void onFocusChange(View v, boolean hasFocus){
+				if(!hasFocus){
+					Main.this.slideoutMenu();
+				}
+			}
+		});
+		this.findViewById(R.id.store).setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v){
+				System.out.println("Clicked");
+			}
+		});
 	}
+	private void slideinMenu(){
+		// Hide menu trigger
+		this.findViewById(R.id.menu_trigger).setVisibility(View.GONE);
+		// Slide in menu
+		View menu=this.findViewById(R.id.menu);
+		menu.setVisibility(View.VISIBLE);
+		menu.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slidein_menu));
+		// Request focus
+		View btn=this.findViewById(R.id.invisible_focusable_btn);
+		if(!btn.requestFocus()){
+			btn.requestFocusFromTouch();
+		}
+	}
+	private void slideoutMenu(){
+		// Slide out menu
+		Animation slideOut=AnimationUtils.loadAnimation(this, R.anim.slideout_menu);
+		slideOut.setAnimationListener(new Animation.AnimationListener(){
+			@Override
+			public void onAnimationStart(Animation anim){}           
+			@Override
+			public void onAnimationRepeat(Animation anim){}           
+			@Override
+			public void onAnimationEnd(Animation anim){
+				Main.this.hideMenu();
+			}
+		});
+		this.findViewById(R.id.menu).startAnimation(slideOut);
+	}
+		private void hideMenu(){
+			// Hide menu
+			this.findViewById(R.id.menu).setVisibility(View.GONE);
+			// Show menu trigger
+			this.findViewById(R.id.menu_trigger).setVisibility(View.VISIBLE);
+		}
 	private void updateValuesFromBundle(Bundle savedInstanceState){ // Restore activity states
 		if(savedInstanceState!=null){
 			// Restore values

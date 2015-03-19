@@ -1,4 +1,4 @@
-package crawler.seven;
+package crawler;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.*;
@@ -10,7 +10,7 @@ import org.apache.http.client.utils.*;
 import org.apache.http.client.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.client.methods.*;
-public class Start{
+public class SevenEleven{
 	private static String[][] cities=new String[][]{
 		{"台北市", "121.517166", "25.048055", "01"},
 		{"基隆市", "121.768104", "25.151627", "02"},

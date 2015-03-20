@@ -27,6 +27,8 @@ input[type="text"].small{width:90px;}
 input[type="text"].tiny{width:35px;}
 input[type="number"].tiny{width:35px;}
 input[type="checkbox"]{vertical-align:middle;}
+textarea.large{width:500px;height:250px;}
+textarea.medium{width:400px;height:200px;}
 /* common */
 .hide{
 display:none;

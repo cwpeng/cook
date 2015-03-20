@@ -10,6 +10,7 @@ import com.google.appengine.api.memcache.*;
 public class Player implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
+	/*
 	public static boolean createMaterial(String name, String description){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
@@ -133,15 +134,12 @@ public class Player implements java.io.Serializable{
 			}
 		}
 	}
+	*/
 	// Instance Definition
 	public String id;
 	public String name;
-	public String description;
-	public int cookbook;
-	public Player(long id, String name, String description, int cookbook){
+	public Player(String id, String name){
 		this.id=id;
 		this.name=name;
-		this.description=description;
-		this.cookbook=cookbook;
 	}
 }

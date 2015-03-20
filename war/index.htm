@@ -13,6 +13,9 @@
 	<div class="title">Basic Data</div>
 	<div class="item" onclick="gm.changePage('material', gm.material.init);">Material</div>
 	<div class="item" onclick="gm.changePage('cookbook', gm.cookbook.init);">Cookbook</div>
+	<div class="item" onclick="gm.changePage('geometry', gm.geometry.init);">Geometry</div>
+	<div class="title">Player Data</div>
+	<div class="title">Statistics</div>
 </div>
 <div class="page" id="welcome">
 	<div>Welcome to Big Cook Management System.</div>
@@ -37,6 +40,20 @@
 	</form>
 	<h3>Cookbook List</h3>
 	<div id="cookbook-list"></div>
+</div>
+<div class="page hide" id="geometry">
+	<h3>Geometry Set Creation</h3>
+	<form onsubmit="gm.geometry.createSet(this);return false;">
+		Name <input type="text" name="name" class="small" />
+		Description <input type="text" name="description" class="large" /><br/>
+		Data:<br/>
+		<input type="radio" name="src" value="input" checked="true" /> one location per line: Ex. 25.331456,120.445687)<br/>
+		<input type="radio" name="src" value="combine" /> one set name per line: Ex. CRAWLER_seven_eleven<br/>
+		<textarea name="data" class="medium"></textarea><br/>
+		<input type="submit" value="Create" />
+	</form>
+	<h3>Geometry Set List</h3>
+	<div id="geometry-set-list"></div>
 </div>
 </body>
 </html>

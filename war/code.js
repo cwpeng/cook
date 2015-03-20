@@ -1,4 +1,4 @@
-var gm={"state":{}, "data":{}, "evts":{}, "material":{}, "cookbook":{}};
+var gm={"state":{}, "data":{}, "evts":{}, "material":{}, "cookbook":{}, "geometry":{}};
 window.onload=function(){
 	gm.state.page="welcome";
 };
@@ -279,6 +279,87 @@ gm.cookbook.del=function(id, index){
 			alert("Deleted");
 			gm.data.cookbooks.splice(index, 1);
 			gm.cookbook.update();
+			index=null;
+		}
+	});
+};
+/* Geometry Management */
+gm.geometry.init=function(){
+	if(!gm.data.geometrySets){
+		gm.geometry.getSets();
+	}
+};
+gm.geometry.getSets=function(){
+	// Get Data
+	gm.ajax({"method":"get", "src":"/exe/data/GetGeometrySets", "args":"", "callback":function(){
+		gm.data.geometrySets=JSON.parse(this.responseText);
+		gm.geometry.updateSets();
+	}});
+};
+gm.geometry.updateSets=function(){
+	// Update cookbook list in cookbook page
+	var list=gm.id("geometry-set-list");
+	list.innerHTML="";
+	var set;
+	var form;
+	for(var i=0;i<gm.data.geometrySets.length;i++){
+		set=gm.data.geometrySets[i];
+		form=gm.createElement("form", {"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}, "evts":{"submit":gm.evts.submitModifyGeometrySetForm}}, list);
+		form.setId=set.id;
+		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+set.name+"' /> "+
+			"Description <input class='large' type='text' name='description' value='"+set.description+"' /></div>";
+		form.innerHTML+="<div><input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /></div>";
+	}
+};
+	gm.evts.submitModifyGeometrySetForm=function(e){
+		e.preventDefault();
+		gm.geometry.modifySet(this);
+	};
+gm.geometry.createSet=function(form){
+	if(form.name.value==""||form.description.value==""){
+		return;
+	}
+	var src;
+	for(var i=0;i<form.elements["src"].length;i++){
+		if(form.elements["src"][i].checked){
+			src=form.elements["src"][i].value;
+			break;
+		}
+	}
+	var lines=form.data.value.split("\r\n");
+	var data="";
+	for(var i=0;i<lines.length;i++){
+		if(src=="input"){ // Basic format test
+			if(lines[i].search(/[^0-9.,]/)>-1){
+				return;
+			}
+		}
+		if(i>0){
+			data+=";";
+		}
+		data+=lines[i];
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/CreateGeometrySet",
+		"args":"name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value)+"&data="+data+"&src="+src,
+		"callback":function(){
+			alert("Created");
+			gm.data.geometrySets=null;
+			gm.geometry.getSets();
+			form.reset();
+			form=null;
+		}
+	});
+};
+gm.geometry.delSet=function(id, index){
+	if(!confirm("Are you sure?")){
+		return;
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/DeleteGeometrySet",
+		"args":"id="+id,
+		"callback":function(){
+			alert("Deleted");
+			gm.data.geometrySets.splice(index, 1);
+			gm.geometry.updateSets();
 			index=null;
 		}
 	});

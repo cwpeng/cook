@@ -19,6 +19,10 @@
 	<welcome-file>index.jsp</welcome-file>
 	<welcome-file>index.htm</welcome-file>
 </welcome-file-list>
+<!-- Server Startup Listener -->
+<listener>
+	<listener-class>pada.ContextListener</listener-class>
+</listener>
 <!-- Material Management -->
 <servlet>
 	<servlet-name>data.GetMaterials</servlet-name>
@@ -84,5 +88,30 @@
 <servlet-mapping>
 	<servlet-name>data.DeleteCookbook</servlet-name>
 	<url-pattern>/exe/data/DeleteCookbook</url-pattern>
+</servlet-mapping>
+<!-- Geometry Set Management -->
+<servlet>
+	<servlet-name>data.GetGeometrySets</servlet-name>
+	<servlet-class>pada.servlet.data.GetGeometrySets</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GetGeometrySets</servlet-name>
+	<url-pattern>/exe/data/GetGeometrySets</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.CreateGeometrySet</servlet-name>
+	<servlet-class>pada.servlet.data.CreateGeometrySet</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.CreateGeometrySet</servlet-name>
+	<url-pattern>/exe/data/CreateGeometrySet</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.DeleteGeometrySet</servlet-name>
+	<servlet-class>pada.servlet.data.DeleteGeometrySet</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.DeleteGeometrySet</servlet-name>
+	<url-pattern>/exe/data/DeleteGeometrySet</url-pattern>
 </servlet-mapping>
 </web-app>

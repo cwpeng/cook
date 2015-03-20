@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+	<!-- For Geometry Set Projection Query -->
+	<datastore-index kind="GeometrySet" ancestor="false" source="manual">
+		<property name="name" direction="asc"/>
+		<property name="description" direction="asc"/>
+	</datastore-index>
+</datastore-indexes>

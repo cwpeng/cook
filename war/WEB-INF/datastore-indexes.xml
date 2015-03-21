@@ -4,5 +4,6 @@
 	<datastore-index kind="GeometrySet" ancestor="false" source="manual">
 		<property name="name" direction="asc"/>
 		<property name="description" direction="asc"/>
+		<property name="number" direction="asc"/>
 	</datastore-index>
 </datastore-indexes>

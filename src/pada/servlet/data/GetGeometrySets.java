@@ -15,7 +15,7 @@ public class GetGeometrySets extends HttpServlet{
 			if(i>0){
 				json.append(",");
 			}
-			json.append("{\"id\":"+sets[i].id+",\"name\":\""+sets[i].name+"\",\"description\":\""+sets[i].description+"\"}");
+			json.append("{\"id\":"+sets[i].id+",\"name\":\""+sets[i].name+"\",\"description\":\""+sets[i].description+"\",\"number\":"+sets[i].number+"}");
 		}
 		json.append("]");
 		// Make Output

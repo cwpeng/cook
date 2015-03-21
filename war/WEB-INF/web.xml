@@ -107,6 +107,14 @@
 	<url-pattern>/exe/data/CreateGeometrySet</url-pattern>
 </servlet-mapping>
 <servlet>
+	<servlet-name>data.ModifyGeometrySet</servlet-name>
+	<servlet-class>pada.servlet.data.ModifyGeometrySet</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.ModifyGeometrySet</servlet-name>
+	<url-pattern>/exe/data/ModifyGeometrySet</url-pattern>
+</servlet-mapping>
+<servlet>
 	<servlet-name>data.DeleteGeometrySet</servlet-name>
 	<servlet-class>pada.servlet.data.DeleteGeometrySet</servlet-class>
 </servlet>

@@ -308,7 +308,7 @@ gm.geometry.updateSets=function(){
 		form.setId=set.id;
 		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+set.name+"' /> "+
 			"Description <input class='large' type='text' name='description' value='"+set.description+"' /></div>";
-		form.innerHTML+="<div><input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /></div>";
+		form.innerHTML+="<div>"+set.number+" Records <input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /></div>";
 	}
 };
 	gm.evts.submitModifyGeometrySetForm=function(e){
@@ -326,7 +326,7 @@ gm.geometry.createSet=function(form){
 			break;
 		}
 	}
-	var lines=form.data.value.split("\r\n");
+	var lines=form.data.value.split(/\r\n|\n|\r/);
 	var data="";
 	for(var i=0;i<lines.length;i++){
 		if(src=="input"){ // Basic format test
@@ -347,6 +347,17 @@ gm.geometry.createSet=function(form){
 			gm.geometry.getSets();
 			form.reset();
 			form=null;
+		}
+	});
+};
+gm.geometry.modifySet=function(form){
+	if(form.name.value==""||form.description.value==""){
+		return;
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/ModifyGeometrySet",
+		"args":"id="+form.setId+"&name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value),
+		"callback":function(){
+			alert("Modified");
 		}
 	});
 };

@@ -1,4 +1,4 @@
-var gm={"state":{}, "data":{}, "evts":{}, "material":{}, "cookbook":{}, "geometry":{}};
+var gm={"state":{}, "data":{}, "evts":{}, "ui":{}, "material":{}, "cookbook":{}, "geometry":{}};
 window.onload=function(){
 	gm.state.page="welcome";
 };
@@ -6,8 +6,12 @@ gm.id=function(id){
 	return document.getElementById(id);
 };
 gm.ajax=function(args){
+	gm.ui.showMask();
 	var req=new XMLHttpRequest();
-	req.onload=args.callback;
+	req.onload=function(){
+		args.callback.apply(this); args=null;
+		gm.ui.hideMask();
+	};
 	if(args.method.toLowerCase()=="post"){
 		req.open(args.method, args.src, true);
 		req.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -73,6 +77,13 @@ gm.changePage=function(id, init){
 	if(typeof init=="function"){
 		init();
 	}
+};
+/* Shared User Interface */
+gm.ui.showMask=function(){
+	gm.id("mask").style.display="block";
+};
+gm.ui.hideMask=function(){
+	gm.id("mask").style.display="none";
 };
 /* Material Management */
 gm.material.init=function(){
@@ -308,7 +319,7 @@ gm.geometry.updateSets=function(){
 		form.setId=set.id;
 		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+set.name+"' /> "+
 			"Description <input class='large' type='text' name='description' value='"+set.description+"' /></div>";
-		form.innerHTML+="<div>"+set.number+" Records <input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /></div>";
+		form.innerHTML+="<div>"+set.number+" Records <input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /> <input type='button' value='View Data' onclick='gm.geometry.getSetData("+set.id+",false);' /> <input type='button' value='Download' onclick='gm.geometry.getSetData("+set.id+",true);' /></div>";
 	}
 };
 	gm.evts.submitModifyGeometrySetForm=function(e){
@@ -329,9 +340,23 @@ gm.geometry.createSet=function(form){
 	var lines=form.data.value.split(/\r\n|\n|\r/);
 	var data="";
 	for(var i=0;i<lines.length;i++){
-		if(src=="input"){ // Basic format test
+		if(src=="input"){
+			// Basic input format test
 			if(lines[i].search(/[^0-9.,]/)>-1){
+				alert("Format of latlng data you input is incorrect.");
 				return;
+			}
+		}else{
+			// Convert set name to id
+			for(var j=0;j<gm.data.geometrySets.length;j++){
+				if(lines[i]==gm.data.geometrySets[j].name){
+					lines[i]=gm.data.geometrySets[j].id;
+					break;
+				}
+				if(j==gm.data.geometrySets.length-1){
+					alert("Set name you input dose not exist.");
+					return;
+				}
 			}
 		}
 		if(i>0){
@@ -374,4 +399,7 @@ gm.geometry.delSet=function(id, index){
 			index=null;
 		}
 	});
+};
+gm.geometry.getSetData=function(id, download){
+	window.open("/exe/data/GetGeometrySet?id="+id+(download?"&download=true":""), "_blank");
 };

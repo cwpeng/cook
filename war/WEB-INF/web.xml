@@ -99,6 +99,14 @@
 	<url-pattern>/exe/data/GetGeometrySets</url-pattern>
 </servlet-mapping>
 <servlet>
+	<servlet-name>data.GetGeometrySet</servlet-name>
+	<servlet-class>pada.servlet.data.GetGeometrySet</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GetGeometrySet</servlet-name>
+	<url-pattern>/exe/data/GetGeometrySet</url-pattern>
+</servlet-mapping>
+<servlet>
 	<servlet-name>data.CreateGeometrySet</servlet-name>
 	<servlet-class>pada.servlet.data.CreateGeometrySet</servlet-class>
 </servlet>

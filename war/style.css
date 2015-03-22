@@ -17,7 +17,7 @@ margin-left:20px;
 }
 /* page */
 .page{
-float:right;width:800px;min-height:500px;line-height:30px;
+float:right;width:800px;min-height:500px;line-height:30px;margin-bottom:100px;
 }
 /* form & input */
 form{padding:10px;}
@@ -29,6 +29,12 @@ input[type="number"].tiny{width:35px;}
 input[type="checkbox"]{vertical-align:middle;}
 textarea.large{width:500px;height:250px;}
 textarea.medium{width:400px;height:200px;}
+/* mask */
+.mask{
+z-index:100;position:fixed;top:0px;left:0px;width:100%;height:100%;
+background-color:#ffffff;opacity:0.5;display:none;
+text-align:right;
+}
 /* common */
 .hide{
 display:none;

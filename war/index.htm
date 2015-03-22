@@ -14,6 +14,7 @@
 	<div class="item" onclick="gm.changePage('material', gm.material.init);">Material</div>
 	<div class="item" onclick="gm.changePage('cookbook', gm.cookbook.init);">Cookbook</div>
 	<div class="item" onclick="gm.changePage('geometry', gm.geometry.init);">Geometry</div>
+	<div class="item" onclick="gm.changePage('factory', gm.factory.init);">Factory</div>
 	<div class="title">Player Data</div>
 	<div class="title">Statistics</div>
 </div>
@@ -47,13 +48,19 @@
 		Name <input type="text" name="name" class="small" />
 		Description <input type="text" name="description" class="large" /><br/>
 		Data:<br/>
-		<input type="radio" name="src" value="input" checked="true" /> one location per line: Ex. 25.331456,120.445687)<br/>
-		<input type="radio" name="src" value="combine" /> one set name per line: Ex. CRAWLER_seven_eleven<br/>
+		<input type="radio" name="src" value="input" checked="true" /> one location per line: Ex. 25.331456,120.445687<br/>
+		<input type="radio" name="src" value="combine" /> one set name per line: Ex. OK Mart<br/>
 		<textarea name="data" class="medium"></textarea><br/>
 		<input type="submit" value="Create" />
 	</form>
 	<h3>Geometry Set List</h3>
 	<div id="geometry-set-list"></div>
 </div>
+<div class="page hide" id="factory">
+	<h3>Factory Creation</h3>
+	<h3>Factory Summary</h3>
+	<div id="factory-summary"></div>
+</div>
+<div class="page mask" id="mask">... Loading ... &nbsp;</div>
 </body>
 </html>

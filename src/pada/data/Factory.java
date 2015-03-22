@@ -7,7 +7,7 @@ import java.util.ConcurrentModificationException;
 import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
-public class Place implements java.io.Serializable{
+public class Factory implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
 	/*
@@ -137,10 +137,11 @@ public class Place implements java.io.Serializable{
 	*/
 	// Instance Definition
 	public long id;
-	public double latitude, longitude;
-	public Place(long id, double latitude, double longitude){
+	public double lat, lng;
+	public long[][] materialIds;
+	public Factory(long id, double lat, double lng){
 		this.id=id;
-		this.latitude=latitude;
-		this.longitude=longitude;
+		this.lat=lat;
+		this.lng=lng;
 	}
 }

@@ -88,7 +88,11 @@ gm.ui.hideMask=function(){
 /* Material Management */
 gm.material.init=function(){
 	if(!gm.data.materials){
-		gm.material.get();
+		if(gm.data.geometrySets){
+			gm.material.get();
+		}else{
+			gm.geometry.getSets(gm.material.init);
+		}
 	}
 };
 gm.material.create=function(form){
@@ -96,7 +100,7 @@ gm.material.create=function(form){
 		return;
 	}
 	gm.ajax({"method":"post", "src":"/exe/data/CreateMaterial",
-		"args":"name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value),
+		"args":"name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value)+"&geometry_set="+form.geometry_set.options[form.geometry_set.selectedIndex].value,
 		"callback":function(){
 			alert("Created");
 			gm.data.materials=null;
@@ -110,10 +114,25 @@ gm.material.modify=function(form){
 	if(form.name.value==""||form.description.value==""){
 		return;
 	}
+	var geometrySetName=form.geometry_set.value.toLowerCase();
+	var geometrySet=0;
+	for(var i=0;i<gm.data.geometrySets.length;i++){
+		if(geometrySetName==gm.data.geometrySets[i].name.toLowerCase()){
+			geometrySet=gm.data.geometrySets[i].id;
+			geometrySetName=gm.data.geometrySets[i].name;
+			break;
+		}
+	}
 	gm.ajax({"method":"post", "src":"/exe/data/ModifyMaterial",
-		"args":"id="+form.materialId+"&name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value),
+		"args":"id="+form.materialId+"&name="+encodeURIComponent(form.name.value)+"&description="+encodeURIComponent(form.description.value)+"&geometry_set="+geometrySet,
 		"callback":function(){
+			if(geometrySet==0){
+				form.geometry_set.value="";
+			}else{
+				form.geometry_set.value=geometrySetName;
+			}
 			alert("Modified");
+			form=geometrySetName=geometrySet=null;
 		}
 	});
 };
@@ -139,6 +158,7 @@ gm.material.get=function(callback){
 		if(typeof callback=="function"){
 			callback();
 		}
+		callback=null;
 	}});
 };
 gm.material.update=function(){
@@ -153,6 +173,7 @@ gm.material.update=function(){
 		form.materialId=material.id;
 		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+material.name+"' /> "+
 			"Description <input class='large' type='text' name='description' value='"+material.description+"' /></div>";
+		form.innerHTML+="<div>Geometry Set <input class='small' type='text' name='geometry_set' value='"+gm.material.getGeometrySetNameById(material.geometrySet)+"' /></div>";
 		if(material.cookbook>0){
 			form.innerHTML+="<div><input type='submit' value='Modify' /> <input type='button' value='Delete("+material.cookbook+")' disabled='true' /></div>";
 		}else{
@@ -170,6 +191,14 @@ gm.material.update=function(){
 		list.innerHTML+=material.name+"<input type='checkbox' name='material"+material.id+"' /> <input type='number' value='1' min='1' max='10' step='1' class='tiny' name='material"+material.id+"number' />";
 	}
 };
+	gm.material.getGeometrySetNameById=function(id){
+		for(var i=0;i<gm.data.geometrySets.length;i++){
+			if(gm.data.geometrySets[i].id==id){
+				return gm.data.geometrySets[i].name;
+			}
+		}
+		return "";
+	};
 	gm.evts.submitModifyMaterialForm=function(e){
 		e.preventDefault();
 		gm.material.modify(this);
@@ -177,14 +206,14 @@ gm.material.update=function(){
 /* Cookbook Management */
 gm.cookbook.init=function(){
 	if(!gm.data.cookbooks){
-		gm.cookbook.get();
+		if(gm.data.materials){
+			gm.cookbook.get();
+		}else{
+			gm.material.get(gm.cookbook.init);
+		}
 	}
 };
 gm.cookbook.get=function(){
-	if(!gm.data.materials){
-		gm.material.get(gm.cookbook.get);
-		return;
-	}
 	// Get Data
 	gm.ajax({"method":"get", "src":"/exe/data/GetCookbooks", "args":"", "callback":function(){
 		gm.data.cookbooks=JSON.parse(this.responseText);
@@ -300,15 +329,19 @@ gm.geometry.init=function(){
 		gm.geometry.getSets();
 	}
 };
-gm.geometry.getSets=function(){
+gm.geometry.getSets=function(callback){
 	// Get Data
 	gm.ajax({"method":"get", "src":"/exe/data/GetGeometrySets", "args":"", "callback":function(){
 		gm.data.geometrySets=JSON.parse(this.responseText);
 		gm.geometry.updateSets();
+		if(typeof callback=="function"){
+			callback();
+		}
+		callback=null;
 	}});
 };
 gm.geometry.updateSets=function(){
-	// Update cookbook list in cookbook page
+	// Update geometry set list in geometry page
 	var list=gm.id("geometry-set-list");
 	list.innerHTML="";
 	var set;
@@ -320,6 +353,14 @@ gm.geometry.updateSets=function(){
 		form.innerHTML="<div>Name <input class='small' type='text' name='name' value='"+set.name+"' /> "+
 			"Description <input class='large' type='text' name='description' value='"+set.description+"' /></div>";
 		form.innerHTML+="<div>"+set.number+" Records <input type='submit' value='Modify' /> <input type='button' value='Delete' onclick='gm.geometry.delSet("+set.id+", "+i+");' /> <input type='button' value='View Data' onclick='gm.geometry.getSetData("+set.id+",false);' /> <input type='button' value='Download' onclick='gm.geometry.getSetData("+set.id+",true);' /></div>";
+	}
+	// Update geometry set list in material page
+	list=gm.id("material-geometry-set-list");
+	list.innerHTML="";
+	list.add(gm.createElement("option", {"atrs":{"value":0, "textContent":""}}));
+	for(var i=0;i<gm.data.geometrySets.length;i++){
+		set=gm.data.geometrySets[i];
+		list.add(gm.createElement("option", {"atrs":{"value":set.id, "textContent":set.name}}));
 	}
 };
 	gm.evts.submitModifyGeometrySetForm=function(e){

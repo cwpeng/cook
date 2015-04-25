@@ -9,10 +9,10 @@ public class CreateMaterial extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
 		// 取得並驗證使用者輸入資訊
-		if(request.getParameter("name")==null||request.getParameter("description")==null){
+		if(request.getParameter("name")==null||request.getParameter("description")==null||request.getParameter("geometry_set")==null){
 			return;
 		}else{
-			response.setHeader("result", pada.data.Material.createMaterial(request.getParameter("name"), request.getParameter("description")) + "");
+			response.setHeader("result", pada.data.Material.createMaterial(request.getParameter("name"), request.getParameter("description"), Long.parseLong(request.getParameter("geometry_set"))) + "");
 		}
 	}
 }

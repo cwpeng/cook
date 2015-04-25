@@ -26,6 +26,7 @@
 	<form onsubmit="gm.material.create(this);return false;">
 		Name <input type="text" name="name" class="small" />
 		Description <input type="text" name="description" class="large" /><br/>
+		Geometry Set <select name="geometry_set" id="material-geometry-set-list"></select>
 		<input type="submit" value="Create" />
 	</form>
 	<h3>Material List</h3>
@@ -36,7 +37,7 @@
 	<form onsubmit="gm.cookbook.create(this);return false;">
 		Name <input type="text" name="name" class="small" />
 		Description <input type="text" name="description" class="large" /><br/>
-		Materials <div id="cookbook-material-list" style="border:1px solid #aaaaaa;padding:5px;"></div>
+		Materials <div id="cookbook-material-list" class="checkbox-list"></div>
 		<input type="submit" value="Create" />
 	</form>
 	<h3>Cookbook List</h3>

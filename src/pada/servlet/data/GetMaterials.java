@@ -15,7 +15,7 @@ public class GetMaterials extends HttpServlet{
 			if(i>0){
 				json.append(",");
 			}
-			json.append("{\"id\":"+materials[i].id+",\"name\":\""+materials[i].name+"\",\"description\":\""+materials[i].description+"\",\"cookbook\":"+materials[i].cookbook+"}");
+			json.append("{\"id\":"+materials[i].id+",\"name\":\""+materials[i].name+"\",\"description\":\""+materials[i].description+"\",\"geometrySet\":"+materials[i].geometrySet+",\"cookbook\":"+materials[i].cookbook+"}");
 		}
 		json.append("]");
 		// Make Output

@@ -10,7 +10,7 @@ import com.google.appengine.api.memcache.*;
 public class Material implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
-	public static boolean createMaterial(String name, String description){
+	public static boolean createMaterial(String name, String description, long geometrySet){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
@@ -19,6 +19,7 @@ public class Material implements java.io.Serializable{
 				Entity material=new Entity("Material");
 				material.setProperty("name", name);
 				material.setUnindexedProperty("description", description);
+				material.setUnindexedProperty("geometrySet", geometrySet);
 				material.setProperty("cookbook", 0); // Cookbook number this material supported
 				material.setProperty("create-time", new Date());
 				datastore.put(material);
@@ -49,6 +50,7 @@ public class Material implements java.io.Serializable{
 			return new Material(entity.getKey().getId(),
 				(String)entity.getProperty("name"),
 				(String)entity.getProperty("description"),
+				((Number)entity.getProperty("geometrySet")).longValue(),
 				((Number)entity.getProperty("cookbook")).intValue());
 		}catch(Exception e){
 			Logger.getLogger(Material.class.getName()).warning(e.toString());
@@ -66,6 +68,7 @@ public class Material implements java.io.Serializable{
 				list.add(new Material(entity.getKey().getId(),
 					(String)entity.getProperty("name"),
 					(String)entity.getProperty("description"),
+					((Number)entity.getProperty("geometrySet")).longValue(),
 					((Number)entity.getProperty("cookbook")).intValue()));
 			}
 			materials=list.toArray(new Material[0]);
@@ -103,7 +106,7 @@ public class Material implements java.io.Serializable{
 			}
 		}
 	}
-	public static boolean modifyMaterial(long id, String name, String description){
+	public static boolean modifyMaterial(long id, String name, String description, long geometrySet){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
@@ -112,6 +115,7 @@ public class Material implements java.io.Serializable{
 				Entity material=datastore.get(KeyFactory.createKey("Material", id));
 				material.setProperty("name", name);
 				material.setUnindexedProperty("description", description);
+				material.setUnindexedProperty("geometrySet", geometrySet);
 				datastore.put(material);
 				txn.commit();
 				// 清空快取
@@ -137,11 +141,13 @@ public class Material implements java.io.Serializable{
 	public long id;
 	public String name;
 	public String description;
+	public long geometrySet;
 	public int cookbook;
-	public Material(long id, String name, String description, int cookbook){
+	public Material(long id, String name, String description, long geometrySet, int cookbook){
 		this.id=id;
 		this.name=name;
 		this.description=description;
+		this.geometrySet=geometrySet;
 		this.cookbook=cookbook;
 	}
 }

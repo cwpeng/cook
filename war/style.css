@@ -19,6 +19,9 @@ margin-left:20px;
 .page{
 float:right;width:800px;min-height:500px;line-height:30px;margin-bottom:100px;
 }
+.page .checkbox-list{
+border:1px solid #aaaaaa;padding:5px;
+}
 /* form & input */
 form{padding:10px;}
 input[type="text"].large{width:500px;}

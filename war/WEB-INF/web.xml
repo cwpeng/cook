@@ -130,4 +130,21 @@
 	<servlet-name>data.DeleteGeometrySet</servlet-name>
 	<url-pattern>/exe/data/DeleteGeometrySet</url-pattern>
 </servlet-mapping>
+<!-- Material Base Management -->
+<servlet>
+	<servlet-name>data.GenerateMaterialBases</servlet-name>
+	<servlet-class>pada.servlet.data.GenerateMaterialBases</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GenerateMaterialBases</servlet-name>
+	<url-pattern>/exe/data/GenerateMaterialBases</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.DeleteMaterialBases</servlet-name>
+	<servlet-class>pada.servlet.data.DeleteMaterialBases</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.DeleteMaterialBases</servlet-name>
+	<url-pattern>/exe/data/DeleteMaterialBases</url-pattern>
+</servlet-mapping>
 </web-app>

@@ -1,4 +1,4 @@
-var gm={"state":{}, "data":{}, "evts":{}, "ui":{}, "material":{}, "cookbook":{}, "geometry":{}};
+var gm={"state":{}, "data":{}, "evts":{}, "ui":{}, "material":{}, "cookbook":{}, "geometry":{}, "base":{}};
 window.onload=function(){
 	gm.state.page="welcome";
 };
@@ -443,4 +443,22 @@ gm.geometry.delSet=function(id, index){
 };
 gm.geometry.getSetData=function(id, download){
 	window.open("/exe/data/GetGeometrySet?id="+id+(download?"&download=true":""), "_blank");
+};
+/* Geometry Management */
+gm.base.init=function(){};
+gm.base.del=function(){
+	gm.ajax({"method":"post", "src":"/exe/data/DeleteMaterialBases",
+		"args":"",
+		"callback":function(){
+			alert("Deleted");
+		}
+	});
+};
+gm.base.generate=function(){
+	gm.ajax({"method":"post", "src":"/exe/data/GenerateMaterialBases",
+		"args":"",
+		"callback":function(){
+			alert("Generated");
+		}
+	});
 };

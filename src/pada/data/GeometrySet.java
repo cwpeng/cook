@@ -151,7 +151,7 @@ public class GeometrySet implements java.io.Serializable{
 	public String name;
 	public String description;
 	public int number;
-	public double[][] data;
+	public double[][] data; // 0:latitude, 1:longitude
 	public GeometrySet(long id, String name, String description, int number){
 		this.id=id;
 		this.name=name;

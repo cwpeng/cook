@@ -14,7 +14,7 @@
 	<div class="item" onclick="gm.changePage('material', gm.material.init);">Material</div>
 	<div class="item" onclick="gm.changePage('cookbook', gm.cookbook.init);">Cookbook</div>
 	<div class="item" onclick="gm.changePage('geometry', gm.geometry.init);">Geometry</div>
-	<div class="item" onclick="gm.changePage('factory', gm.factory.init);">Factory</div>
+	<div class="item" onclick="gm.changePage('base', gm.base.init);">Material Base</div>
 	<div class="title">Player Data</div>
 	<div class="title">Statistics</div>
 </div>
@@ -57,10 +57,14 @@
 	<h3>Geometry Set List</h3>
 	<div id="geometry-set-list"></div>
 </div>
-<div class="page hide" id="factory">
-	<h3>Factory Creation</h3>
-	<h3>Factory Summary</h3>
-	<div id="factory-summary"></div>
+<div class="page hide" id="base">
+	<h3>Material Base Generation</h3>
+	<div>
+		<button onclick="gm.base.del();">Delete</button>
+		<button onclick="gm.base.generate();">Generate</button>
+	</div>
+	<h3>Material Base Summary</h3>
+	<div id="base-summary"></div>
 </div>
 <div class="page mask" id="mask">... Loading ... &nbsp;</div>
 </body>

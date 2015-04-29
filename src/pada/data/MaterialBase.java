@@ -13,7 +13,7 @@ public class MaterialBase implements java.io.Serializable{
 	public static int delete(){
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBase").setKeysOnly();
-		Iterable<Entity> entities=datastore.prepare(query).asIterable();
+		Iterable<Entity> entities=datastore.prepare(query).asIterable(FetchOptions.Builder.withChunkSize(1000));
 		List<Key> keys=new ArrayList<Key>();
 		for(Entity entity: entities){
 			keys.add(entity.getKey());
@@ -44,6 +44,7 @@ public class MaterialBase implements java.io.Serializable{
 			}
 		});
 		// Combined bases where distance between whom is lower than 500 meters, about 0.005 longitude or 0.0045 latitude.
+		int combinedCount=0;
 		MaterialBase base;
 		for(int i=0;i<bases.length;i++){
 			base=bases[i];
@@ -61,6 +62,7 @@ public class MaterialBase implements java.io.Serializable{
 				if(MaterialBase.distance(bases[j].lat, bases[j].lng, base.lat, base.lng)<500){
 					MaterialBase.combine(base, bases[j]);
 					bases[j]=null;
+					combinedCount++;
 				}
 			}
 			// Downward check
@@ -74,10 +76,11 @@ public class MaterialBase implements java.io.Serializable{
 				if(MaterialBase.distance(bases[j].lat, bases[j].lng, base.lat, base.lng)<500){
 					MaterialBase.combine(base, bases[j]);
 					bases[j]=null;
+					combinedCount++;
 				}
 			}
 		}
-		//MaterialBase.save(bases);
+		MaterialBase.save(bases, bases.length-combinedCount);
 		return bases;
 	}
 		private static void combine(MaterialBase base1, MaterialBase base2){
@@ -124,40 +127,56 @@ public class MaterialBase implements java.io.Serializable{
 			return dist;
 		}
 	*/
-	/*
-		private static boolean save(MaterialBase[] bases){
-			int retries=1;
-			DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
-			while(true){
-				Transaction txn=datastore.beginTransaction();
-				try{
-					Entity material=new Entity("Material");
-					material.setProperty("name", name);
-					material.setUnindexedProperty("description", description);
-					material.setProperty("cookbook", 0); // Cookbook number this material supported
-					material.setProperty("create-time", new Date());
-					datastore.put(material);
-					txn.commit();
-					// 清空快取
-					MemcacheServiceFactory.getMemcacheService().delete("Materials");
-					return true;
-				}catch(ConcurrentModificationException e){
-					if(retries==0){
-						Logger.getLogger(Material.class.getName()).warning(e.toString());
-						return false;
+		private static boolean save(MaterialBase[] bases, int total){
+			try{
+				DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+				List<Entity> materialBases=new ArrayList<Entity>(total);
+				List<Long> materials;
+				Entity materialBase;
+				for(int i=0;i<bases.length;i++){
+					if(bases[i]==null){
+						continue;
 					}
-					retries--;
-				}catch(Exception e){
-					Logger.getLogger(Material.class.getName()).warning(e.toString());
-					return false;
-				}finally{
-					if(txn.isActive()){
-						txn.rollback();
+					materials=new ArrayList<Long>(bases[i].materials.length);
+					for(int j=0;j<bases[i].materials.length;j++){
+						materials.add(bases[i].materials[j]);
 					}
+					materialBase=new Entity("MaterialBase");
+					materialBase.setProperty("lat", bases[i].lat);
+					materialBase.setProperty("lng", bases[i].lng);
+					materialBase.setProperty("materials", materials);
+					materialBases.add(materialBase);
 				}
+				datastore.put(materialBases);
+				return true;
+			}catch(Exception e){
+				Logger.getLogger(MaterialBase.class.getName()).warning(e.toString());
+				return false;
 			}
 		}
-	/*
+	public static Entity getSummary(){
+		// Check if any entity exists
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		Query query=new Query("MaterialBase").setKeysOnly();
+		List<Entity> bases=datastore.prepare(query).asList(FetchOptions.Builder.withChunkSize(1));
+		// Get statistics, which may be updated once a day
+		Iterable<Entity> kinds=DatastoreServiceFactory.getDatastoreService().prepare(new Query("__Stat_Kind__")).asIterable();
+		Entity baseKind=null;
+		for(Entity kind: kinds){
+			if(((String)kind.getProperty("kind_name")).equals("MaterialBase")){
+				baseKind=kind;
+				break;
+			}
+		}
+		if(baseKind==null){
+			baseKind=new Entity("MaterialBase");
+			baseKind.setProperty("count", 0l);
+			baseKind.setProperty("timestamp", new Date(0));
+		}
+		baseKind.setProperty("generated", bases.size()>0);
+		return baseKind;
+	}
+/*
 	public static boolean createMaterial(String name, String description){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();

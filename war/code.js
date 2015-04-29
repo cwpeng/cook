@@ -445,20 +445,59 @@ gm.geometry.getSetData=function(id, download){
 	window.open("/exe/data/GetGeometrySet?id="+id+(download?"&download=true":""), "_blank");
 };
 /* Geometry Management */
-gm.base.init=function(){};
-gm.base.del=function(){
-	gm.ajax({"method":"post", "src":"/exe/data/DeleteMaterialBases",
+gm.base.init=function(){
+	if(!gm.data.baseSummary){
+		gm.base.getSummary();
+	}
+};
+gm.base.getSummary=function(){
+	gm.ajax({"method":"post", "src":"/exe/data/GetMaterialBaseSummary",
 		"args":"",
 		"callback":function(){
-			alert("Deleted");
+			gm.data.baseSummary=JSON.parse(this.responseText);
+			gm.base.updateSummary();
 		}
 	});
 };
 gm.base.generate=function(){
-	gm.ajax({"method":"post", "src":"/exe/data/GenerateMaterialBases",
-		"args":"",
-		"callback":function(){
-			alert("Generated");
+	if(window.confirm("Generate New Data?")){
+		gm.ajax({"method":"post", "src":"/exe/data/GenerateMaterialBases",
+			"args":"",
+			"callback":function(){
+				gm.base.getSummary();
+				alert("Generated");
+			}
+		});
+	}
+};
+gm.base.del=function(){
+	if(window.confirm("Delete Data?")&&window.confirm("Sure?")){
+		gm.ajax({"method":"post", "src":"/exe/data/DeleteMaterialBases",
+			"args":"",
+			"callback":function(){
+				gm.base.getSummary();
+				alert("Deleted");
+			}
+		});
+	}
+};
+gm.base.updateSummary=function(){
+	var summary=gm.data.baseSummary;
+	var container=gm.id("base-summary");
+	if(summary.generated){
+		gm.id("base-generate-btn").disabled=true;
+		gm.id("base-del-btn").disabled=false;
+		container.innerHTML="Data Generated".bold()+"<br/>";
+		if(summary.count>0){
+			var time=new Date(summary.updateTime);
+			time=time.getFullYear()+"-"+(time.getMonth()+1)+"-"+time.getDate()+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds();
+			container.innerHTML+="Base Count: "+summary.count+"<br/>Update Time: "+time;
+		}else{ // No Data
+			container.innerHTML+="Statistical Data is Delayed (Only update once a day)";
 		}
-	});
+	}else{
+		gm.id("base-generate-btn").disabled=false;
+		gm.id("base-del-btn").disabled=true;
+		container.innerHTML="Data Unavailable".bold();
+	}
 };

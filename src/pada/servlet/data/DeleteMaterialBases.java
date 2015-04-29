@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 public class DeleteMaterialBases extends HttpServlet{
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
 		int result;
 		while(true){

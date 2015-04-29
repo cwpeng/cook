@@ -5,29 +5,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-public class GenerateMaterialBases extends HttpServlet{
+import com.google.appengine.api.datastore.Entity;
+public class GetMaterialBaseSummary extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
-		pada.data.MaterialBase[] bases=pada.data.MaterialBase.generate();
-		/*
-		int count=0;
-		StringBuilder result=new StringBuilder();
-		for(int i=0;i<bases.length;i++){
-			if(bases[i]==null){
-				count++;
-				result.append("<br/>null");
-			}else{
-				result.append("<br/>"+bases[i].lat+","+bases[i].lng);
-				for(int j=0;j<bases[i].materials.length;j++){
-					result.append(","+bases[i].materials[j]);
-				}
-			}
-		}
+		Entity summary=pada.data.MaterialBase.getSummary();
+		long count=((Long)summary.getProperty("count")).longValue();
+		long updateTime=((java.util.Date)summary.getProperty("timestamp")).getTime();
 		// Make Output
 		response.setCharacterEncoding("utf-8");
 		PrintWriter out=response.getWriter();
-		out.print(count+"/"+bases.length+result.toString());
+		out.print("{\"generated\":"+((Boolean)summary.getProperty("generated")).booleanValue()+",\"count\":"+count+",\"updateTime\":"+updateTime+"}");
 		out.flush(); out.close();
-		*/
 	}
 }

@@ -10,7 +10,7 @@ import com.google.appengine.api.memcache.*;
 public class MaterialBase implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
-	public static int delete(){
+	public static int deleteMaterialBases(){
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBase").setKeysOnly();
 		Iterable<Entity> entities=datastore.prepare(query).asIterable(FetchOptions.Builder.withChunkSize(1000));
@@ -21,7 +21,7 @@ public class MaterialBase implements java.io.Serializable{
 		datastore.delete(keys);
 		return keys.size();
 	}
-	public static MaterialBase[] generate(){
+	public static MaterialBase[] generateMaterialBases(){
 		Material[] materials=Material.getMaterials();
 		List<MaterialBase> baseList=new ArrayList<MaterialBase>(32768);
 		GeometrySet geometrySet;
@@ -154,7 +154,7 @@ public class MaterialBase implements java.io.Serializable{
 				return false;
 			}
 		}
-	public static Entity getSummary(){
+	public static Entity getMaterialBaseSummary(){
 		// Check if any entity exists
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBase").setKeysOnly();
@@ -176,6 +176,85 @@ public class MaterialBase implements java.io.Serializable{
 		baseKind.setProperty("generated", bases.size()>0);
 		return baseKind;
 	}
+	public static String getMaterialBasesJson(){
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		Query query=new Query("MaterialBaseCache");
+		List<Entity> caches=datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		StringBuilder result=new StringBuilder("[");
+		if(caches.size()==0){
+			MaterialBase[] bases=MaterialBase.getMaterialBases();
+			StringBuilder partResult=new StringBuilder();
+			for(int i=0;i<bases.length;i++){
+				if(partResult.length()>0){
+					partResult.append(",");
+				}
+				// "la" for "latitude", "ln" for "longitude", "ms" for "materials"
+				partResult.append("{\"la\":"+bases[i].lat+",\"ln\":"+bases[i].lng+",\"ms\":[");
+				for(int j=0;j<bases[i].materials.length;j++){
+					if(j>0){
+						partResult.append(",");
+					}
+					partResult.append(bases[i].materials[j]);
+				}
+				partResult.append("]}");
+				if((i+1)%2500==0){ // Save json string cache to datastore per 2500 entities according 1MB limit of entity.
+					Entity cache=new Entity("MaterialBaseCache");
+					cache.setUnindexedProperty("data", new Text(partResult.toString()));
+					datastore.put(cache);
+					if(result.length()>0){
+						result.append(",");
+					}
+					result.append(partResult);
+					partResult.setLength(0);
+				}
+			}
+			if(partResult.length()>0){ // Processing the rest json string
+				Entity cache=new Entity("MaterialBaseCache");
+				cache.setUnindexedProperty("data", new Text(partResult.toString()));
+				datastore.put(cache);
+				if(result.length()>0){
+					result.append(",");
+				}
+				result.append(partResult);
+			}
+		}else{
+			for(Entity cache: caches){
+				if(result.length()>0){
+					result.append(",");
+				}
+				result.append((String)cache.getProperty("data"));
+			}
+		}
+		result.append("]");
+		return result.toString();
+	}
+		private static MaterialBase[] getMaterialBases(){
+			List<MaterialBase> list=new ArrayList<MaterialBase>();
+			Cursor cursor=null;
+			while(true){
+				Query query=new Query("MaterialBase");
+				FetchOptions options=FetchOptions.Builder.withChunkSize(1000);
+				options.startCursor(cursor);
+				QueryResultList<Entity> entities=DatastoreServiceFactory.getDatastoreService().prepare(query).asQueryResultList(options);
+				List<Long> materialList;
+				long[] materials;
+				for(Entity entity: entities){
+					materialList=(ArrayList<Long>)entity.getProperty("materials");
+					materials=new long[materialList.size()];
+					for(int i=0;i<materials.length;i++){
+						materials[i]=materialList.get(i);
+					}
+					list.add(new MaterialBase(entity.getKey().getId(),
+						((Number)entity.getProperty("lat")).doubleValue(),
+						((Number)entity.getProperty("lng")).doubleValue(), materials));
+				}
+				cursor=entities.getCursor();
+				if(cursor==null){
+					break;
+				}
+			}
+			return list.toArray(new MaterialBase[0]);
+		}
 /*
 	public static boolean createMaterial(String name, String description){
 		int retries=1;

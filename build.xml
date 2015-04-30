@@ -54,6 +54,9 @@
     <mkdir dir="${war.dir}/WEB-INF/lib"/>
     <javac srcdir="src" destdir="${war.dir}/WEB-INF/classes" encoding="utf-8">
       <classpath>
+		<fileset dir="${war.dir}/WEB-INF/lib">
+          <include name="*.jar"/>
+        </fileset>
         <fileset dir="${appengine.sdk}/lib/user">
           <include name="*.jar"/>
         </fileset>

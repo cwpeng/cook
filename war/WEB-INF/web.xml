@@ -140,6 +140,14 @@
 	<url-pattern>/exe/data/GetMaterialBaseSummary</url-pattern>
 </servlet-mapping>
 <servlet>
+	<servlet-name>data.GetMaterialBases</servlet-name>
+	<servlet-class>pada.servlet.data.GetMaterialBases</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GetMaterialBases</servlet-name>
+	<url-pattern>/exe/data/GetMaterialBases</url-pattern>
+</servlet-mapping>
+<servlet>
 	<servlet-name>data.GenerateMaterialBases</servlet-name>
 	<servlet-class>pada.servlet.data.GenerateMaterialBases</servlet-class>
 </servlet>

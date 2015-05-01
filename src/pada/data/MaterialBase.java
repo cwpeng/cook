@@ -18,6 +18,11 @@ public class MaterialBase implements java.io.Serializable{
 		for(Entity entity: entities){
 			keys.add(entity.getKey());
 		}
+		query=new Query("MaterialBaseCache").setKeysOnly();
+		entities=datastore.prepare(query).asIterable(FetchOptions.Builder.withDefaults());
+		for(Entity entity: entities){
+			keys.add(entity.getKey());
+		}
 		datastore.delete(keys);
 		return keys.size();
 	}
@@ -189,7 +194,7 @@ public class MaterialBase implements java.io.Serializable{
 					partResult.append(",");
 				}
 				// "la" for "latitude", "ln" for "longitude", "ms" for "materials"
-				partResult.append("{\"la\":"+bases[i].lat+",\"ln\":"+bases[i].lng+",\"ms\":[");
+				partResult.append("{\"id\":"+bases[i].id+",\"la\":"+bases[i].lat+",\"ln\":"+bases[i].lng+",\"ms\":[");
 				for(int j=0;j<bases[i].materials.length;j++){
 					if(j>0){
 						partResult.append(",");
@@ -197,11 +202,11 @@ public class MaterialBase implements java.io.Serializable{
 					partResult.append(bases[i].materials[j]);
 				}
 				partResult.append("]}");
-				if((i+1)%2500==0){ // Save json string cache to datastore per 2500 entities according 1MB limit of entity.
+				if((i+1)%2000==0){ // Save json string cache to datastore per 2000 entities according 1MB limit of entity.
 					Entity cache=new Entity("MaterialBaseCache");
 					cache.setUnindexedProperty("data", new Text(partResult.toString()));
 					datastore.put(cache);
-					if(result.length()>0){
+					if(result.length()>1){ // Include "[" at first
 						result.append(",");
 					}
 					result.append(partResult);
@@ -212,17 +217,17 @@ public class MaterialBase implements java.io.Serializable{
 				Entity cache=new Entity("MaterialBaseCache");
 				cache.setUnindexedProperty("data", new Text(partResult.toString()));
 				datastore.put(cache);
-				if(result.length()>0){
-					result.append(",");
+				if(result.length()>1){
+					result.append(","); // Include "[" at first
 				}
 				result.append(partResult);
 			}
 		}else{
 			for(Entity cache: caches){
-				if(result.length()>0){
+				if(result.length()>1){ // Include "[" at first
 					result.append(",");
 				}
-				result.append((String)cache.getProperty("data"));
+				result.append(((Text)cache.getProperty("data")).getValue());
 			}
 		}
 		result.append("]");
@@ -231,11 +236,17 @@ public class MaterialBase implements java.io.Serializable{
 		private static MaterialBase[] getMaterialBases(){
 			List<MaterialBase> list=new ArrayList<MaterialBase>();
 			Cursor cursor=null;
+			int count=0; // For forcing stopping endless loop.
 			while(true){
 				Query query=new Query("MaterialBase");
 				FetchOptions options=FetchOptions.Builder.withChunkSize(1000);
-				options.startCursor(cursor);
+				if(cursor!=null){
+					options.startCursor(cursor);
+				}
 				QueryResultList<Entity> entities=DatastoreServiceFactory.getDatastoreService().prepare(query).asQueryResultList(options);
+				if(entities.size()==0){ // end of entities
+					break;
+				}
 				List<Long> materialList;
 				long[] materials;
 				for(Entity entity: entities){
@@ -249,7 +260,10 @@ public class MaterialBase implements java.io.Serializable{
 						((Number)entity.getProperty("lng")).doubleValue(), materials));
 				}
 				cursor=entities.getCursor();
-				if(cursor==null){
+				// Force stopping endless loop. The premise is the count of entity is less than 100000.
+				count++;
+				if(count>100){
+					Logger.getLogger(MaterialBase.class.getName()).warning("Bad Loop");
 					break;
 				}
 			}

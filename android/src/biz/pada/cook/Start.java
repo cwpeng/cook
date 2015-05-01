@@ -1,4 +1,5 @@
 package biz.pada.cook;
+import biz.pada.cook.service.Network;
 import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,7 +19,8 @@ public class Start extends Activity{
 			}
 		});
 		this.hideSystemUI(frame);
-		String imei=((TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE)).getDeviceId();
+		//String imei=((TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE)).getDeviceId();
+		this.loadResourcesFromServer();
 	}
 	// Hides the system bars.
 	private void hideSystemUI(View view){
@@ -32,5 +34,13 @@ public class Start extends Activity{
 			| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
 			| View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
 			| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+	}
+	// Load updated resources from server
+	private void loadResourcesFromServer(){
+		if(Network.isOnline(this)){
+			
+		}else{
+			Network.showNetworkUnavailable(this);
+		}
 	}
 }

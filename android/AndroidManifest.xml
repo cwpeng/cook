@@ -5,7 +5,7 @@
 	android:versionName="1.0">
 	<uses-sdk android:minSdkVersion="19" />
 	<application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
-		<activity android:name="Start"
+		<activity android:name="biz.pada.cook.Start"
 			android:screenOrientation="portrait"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
 			<intent-filter>
@@ -13,7 +13,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-        <activity android:name="Main"
+        <activity android:name="biz.pada.cook.Main"
 			android:screenOrientation="portrait"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>

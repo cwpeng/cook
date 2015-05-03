@@ -1,4 +1,4 @@
-package pada.servlet.app;
+package pada.servlet.api;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.http.HttpServlet;

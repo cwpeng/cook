@@ -14,6 +14,8 @@ public class ContextListener implements ServletContextListener{
 		}
 		System.setProperty("cook.root", context.getRealPath("/") + separatorCharacter);
 		System.setProperty("cook.res", context.getRealPath("/") + separatorCharacter + "WEB-INF" + File.separator + "res" + File.separator);
+		// 儲存初始化參數
+		System.setProperty("cook.resources.version", context.getInitParameter("RESOURCES_VERSION"));
 	}
 	public void contextDestroyed(ServletContextEvent e){}
 }

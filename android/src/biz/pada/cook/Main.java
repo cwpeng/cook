@@ -1,4 +1,7 @@
 package biz.pada.cook;
+import biz.pada.cook.util.ShareUI;
+import biz.pada.cook.util.SphericalUtil;
+import biz.pada.cook.db.CookDBHelper;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -17,7 +20,9 @@ import com.google.android.gms.common.api.GoogleApiClient.*;
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-public class Main extends Activity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
+import android.database.Cursor;
+import android.database.sqlite.*;
+public class Main extends Activity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, GoogleMap.OnCameraChangeListener, LocationListener{
 	// Static final constants
 	private static final int REQUEST_RESOLVE_ERROR=1001; // Request code to use when launching the resolution activity
     private static final String DIALOG_ERROR="dialog_error"; // Unique tag for the error dialog fragment
@@ -28,6 +33,7 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 	private GoogleMap map;
 	private Marker marker;
 	private Circle circle;
+	private Marker[] markers;
 	// Track whether this activity is already resolving an error about coonecting to Google Play Service
 	private boolean triedResolvingError;
 	/** Called when the activity is first created. */
@@ -189,6 +195,27 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 	@Override
 	public void onMapReady(GoogleMap map){ // First get GoogleMap object on ready callback
 		this.map=map;
+		this.map.getUiSettings().setMyLocationButtonEnabled(false);
+		this.map.setOnCameraChangeListener(this);
+	}
+	// GoogleMap.OnCameraChangeListener implements
+	@Override
+	public void onCameraChange(CameraPosition position){
+		// Update resource bases markers
+		LatLngBounds bounds=this.map.getProjection().getVisibleRegion().latLngBounds;
+		SQLiteDatabase db=(new CookDBHelper(this)).getReadableDatabase();
+		Cursor cursor=db.query("material_base", new String[]{"id", "lat", "lng"},
+			"(lat BETWEEN "+bounds.southwest.latitude+" and "+bounds.northeast.latitude+") and (lng BETWEEN "+bounds.southwest.longitude+" and "+bounds.northeast.longitude+")",
+			null, null, null, null);
+		if(cursor!=null&&cursor.moveToFirst()){
+			int latIndex=cursor.getColumnIndex("lat");
+			int lngIndex=cursor.getColumnIndex("lng");
+			do{
+				this.map.addMarker(new MarkerOptions()
+					.position(new LatLng(cursor.getDouble(latIndex), cursor.getDouble(lngIndex))));
+			}while(cursor.moveToNext());
+			cursor.close();
+		}
 	}
 	// LocationListener implements
 	@Override
@@ -197,6 +224,11 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 			return;
 		}
 		LatLng position=new LatLng(location.getLatitude(), location.getLongitude());
+		// Ignore subtle(less than 3 meters) location change
+		if(this.marker!=null&&SphericalUtil.computeDistanceBetween(position, this.marker.getPosition())<3){
+			return;
+		}
+		// Update player marker and collection circle
 		if(this.marker==null){
 			this.circle=this.map.addCircle(new CircleOptions()
 				.center(position)
@@ -210,6 +242,7 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 			this.circle.setCenter(position);
 			this.marker.setPosition(position);
 		}
+		// Update map camera: before get visible region bounds
 		this.map.moveCamera(CameraUpdateFactory.newLatLng(position));
 	}
 	// ConnectionCallbacks, OnConnectionFailedListener implements

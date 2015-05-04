@@ -10,6 +10,47 @@ import com.google.appengine.api.memcache.*;
 public class Player implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
+	public static Player login(String imei, String password){
+		int retries=1;
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		while(true){
+			Transaction txn=datastore.beginTransaction();
+			try{
+				Date now=new Date();
+				Query query=new Query("Player").setFilter(new FilterPredicate("imei", FilterOperator.EQUAL, imei));
+				String token=pada.util.SHA.digestToHex(password+"3i%@dsD45Q"+(Math.random()*100000));
+				Entity player=datastore.prepare(query).asSingleEntity();
+				if(player==null){
+					player=new Entity("Player");
+					player.setProperty("imei", imei);
+					player.setProperty("password", password);
+					player.setProperty("token", token);
+					player.setProperty("name", null);
+					player.setProperty("login-time", now);
+					player.setProperty("create-time", now);
+				}else{
+					player.setProperty("token", token);
+					player.setProperty("login-time", now);
+				}
+				datastore.put(player);
+				txn.commit();
+				return new Player(player.getKey().getId(), (String)player.getProperty("token"), (String)player.getProperty("name"));
+			}catch(ConcurrentModificationException e){
+				if(retries==0){
+					Logger.getLogger(Material.class.getName()).warning(e.toString());
+					return null;
+				}
+				retries--;
+			}catch(Exception e){
+				Logger.getLogger(Material.class.getName()).warning(e.toString());
+				return null;
+			}finally{
+				if(txn.isActive()){
+					txn.rollback();
+				}
+			}
+		}
+	}
 	/*
 	public static boolean createMaterial(String name, String description){
 		int retries=1;
@@ -136,10 +177,12 @@ public class Player implements java.io.Serializable{
 	}
 	*/
 	// Instance Definition
-	public String id;
+	public long id;
+	public String token;
 	public String name;
-	public Player(String id, String name){
+	public Player(long id, String token, String name){
 		this.id=id;
+		this.token=token;
 		this.name=name;
 	}
 }

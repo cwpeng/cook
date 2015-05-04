@@ -1,6 +1,6 @@
 package biz.pada.cook.service;
 import biz.pada.cook.R;
-import biz.pada.cook.util.ShareUI;
+import biz.pada.cook.ui.ShareUI;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.app.AlertDialog;

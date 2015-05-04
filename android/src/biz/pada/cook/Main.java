@@ -1,5 +1,5 @@
 package biz.pada.cook;
-import biz.pada.cook.util.ShareUI;
+import biz.pada.cook.ui.ShareUI;
 import biz.pada.cook.util.SphericalUtil;
 import biz.pada.cook.db.CookDBHelper;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package biz.pada.cook.util;
+package biz.pada.cook.ui;
 import biz.pada.cook.R;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

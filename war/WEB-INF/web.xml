@@ -162,6 +162,14 @@
 </servlet-mapping>
 <!-- API for Front End -->
 <servlet>
+	<servlet-name>api.Login</servlet-name>
+	<servlet-class>pada.servlet.api.Login</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>api.Login</servlet-name>
+	<url-pattern>/exe/api/Login</url-pattern>
+</servlet-mapping>
+<servlet>
 	<servlet-name>api.GetResourcesVersion</servlet-name>
 	<servlet-class>pada.servlet.api.GetResourcesVersion</servlet-class>
 </servlet>

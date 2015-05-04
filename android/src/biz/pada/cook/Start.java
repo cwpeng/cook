@@ -1,7 +1,9 @@
 package biz.pada.cook;
-import biz.pada.cook.util.ShareUI;
+import biz.pada.cook.ui.ShareUI;
 import biz.pada.cook.service.Network;
+import biz.pada.cook.service.Login;
 import biz.pada.cook.loader.*;
+import biz.pada.cook.core.Player;
 import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -13,6 +15,7 @@ import android.telephony.TelephonyManager;
 public class Start extends Activity{
 	private int localResourcesVersion=-1;
 	private int serverResourcesVersion=-1;
+	private String password;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -20,7 +23,8 @@ public class Start extends Activity{
 		this.setContentView(R.layout.start);
 		FrameLayout frame=(FrameLayout)this.findViewById(R.id.start);
 		this.hideSystemUI(frame);
-		//String imei=((TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE)).getDeviceId();
+		// Login player with IMEI number
+		this.login();
 		// Get local resources version
 		SharedPreferences config=this.getPreferences(Context.MODE_PRIVATE);
 		this.localResourcesVersion=config.getInt("resources-version", -1);
@@ -49,6 +53,23 @@ public class Start extends Activity{
 			}
 		});
 	}
+	// Login player with IMEI number(Player ID)
+	private void login(){
+		if(Network.isOnline(this)){
+			String imei=((TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE)).getDeviceId();
+			StringBuilder passwordBuilder=new StringBuilder((int)Math.floor(Math.random()*899+100)+((char)Math.floor(Math.random()*26+97))+(int)Math.floor(Math.random()*89+10)+((char)Math.floor(Math.random()*26+65))+(int)Math.floor(Math.random()*89+10));
+			for(int i=0;i<5;i++){
+				passwordBuilder.append((char)Math.floor(Math.random()*26+65));
+			}
+			this.password=passwordBuilder.toString();
+			(new Login(this)).execute("http://big-cook.appspot.com/exe/api/Login", imei, this.password);
+		}else{
+			Network.showNetworkUnavailable(this);
+		}
+	}
+		public void loginCallback(Player player){
+			ShareUI.alert(this, player.id+","+player.name+","+player.token);
+		}
 	// Check resources version from server
 	private void checkResourcesVersion(){
 		if(Network.isOnline(this)){

@@ -10,28 +10,52 @@ import com.google.appengine.api.memcache.*;
 public class Player implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
-	public static Player login(String imei, String password){
+	public static long signup(String imei, String password, String name){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
 			Transaction txn=datastore.beginTransaction();
 			try{
 				Date now=new Date();
-				Query query=new Query("Player").setFilter(new FilterPredicate("imei", FilterOperator.EQUAL, imei));
-				String token=pada.util.SHA.digestToHex(password+"3i%@dsD45Q"+(Math.random()*100000));
-				Entity player=datastore.prepare(query).asSingleEntity();
-				if(player==null){
-					player=new Entity("Player");
-					player.setProperty("imei", imei);
-					player.setProperty("password", password);
-					player.setProperty("token", token);
-					player.setProperty("name", null);
-					player.setProperty("login-time", now);
-					player.setProperty("create-time", now);
-				}else{
-					player.setProperty("token", token);
-					player.setProperty("login-time", now);
+				Entity player=new Entity("Player");
+				player.setProperty("imei", imei);
+				player.setProperty("password", password);
+				player.setProperty("token", null);
+				player.setProperty("name", name);
+				player.setProperty("login-time", now);
+				player.setProperty("create-time", now);
+				datastore.put(player);
+				txn.commit();
+				return player.getKey().getId();
+			}catch(ConcurrentModificationException e){
+				if(retries==0){
+					Logger.getLogger(Material.class.getName()).warning(e.toString());
+					return -1;
 				}
+				retries--;
+			}catch(Exception e){
+				Logger.getLogger(Material.class.getName()).warning(e.toString());
+				return -1;
+			}finally{
+				if(txn.isActive()){
+					txn.rollback();
+				}
+			}
+		}
+	}
+	public static Player signin(long id, String password){
+		int retries=1;
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		while(true){
+			Transaction txn=datastore.beginTransaction();
+			try{
+				Entity player=datastore.get(KeyFactory.createKey("Player", id));
+				if(!player.getProperty("password").equals(password)){
+					return null;
+				}
+				String token=pada.util.SHA.digestToHex(password+"3i%@dsD45Q"+(Math.random()*100000));
+				player.setProperty("token", token);
+				player.setProperty("login-time", new Date());
 				datastore.put(player);
 				txn.commit();
 				return new Player(player.getKey().getId(), (String)player.getProperty("token"), (String)player.getProperty("name"));

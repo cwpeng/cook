@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="google_map_api_key">AIzaSyAueW1x2FK3Mxg0cHO56Bhmz67_ogVzZlU</string>
-    <string name="app_name">Big Cook</string>
+    <string name="app_name">天才小廚師</string>
+
+	<string name="signup">請輸入暱稱</string>
 
 	<string name="network_unavailable">網路未連線</string>
-	<string name="dialog_ok">確定</string>
+	<string name="ok">確定</string>
 </resources>

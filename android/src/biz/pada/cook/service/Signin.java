@@ -8,14 +8,14 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
-public class Login extends AsyncTask<String, Void, Player>{
+public class Signin extends AsyncTask<String, Void, Player>{
 	private Start startActivity;
-	public Login(Start startActivity){
+	public Signin(Start startActivity){
 		this.startActivity=startActivity;
 	}
 	@Override
 	protected void onPostExecute(Player player){ // Player data from server
-		this.startActivity.loginCallback(player);
+		this.startActivity.signinCallback(player);
 	}
 	@Override
 	protected Player doInBackground(String... args){
@@ -30,7 +30,7 @@ public class Login extends AsyncTask<String, Void, Player>{
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			writer=new OutputStreamWriter(conn.getOutputStream());
-			writer.write("imei="+args[1]+"&password="+args[2]);
+			writer.write("id="+args[1]+"&password="+args[2]);
 			writer.close();
 			// Starts the query
 			conn.connect();
@@ -68,7 +68,6 @@ public class Login extends AsyncTask<String, Void, Player>{
 		jsonReader.setLenient(true);
 		JsonObject jsonPlayer=(new JsonParser()).parse(jsonReader).getAsJsonObject();
 		// Create Player Object
-		return new Player(jsonPlayer.get("id").getAsLong(), jsonPlayer.get("token").getAsString(),
-			jsonPlayer.get("name").isJsonNull()?null:jsonPlayer.get("name").getAsString());
+		return new Player(jsonPlayer.get("id").getAsLong(), jsonPlayer.get("token").getAsString(), jsonPlayer.get("name").getAsString());
 	}
 }

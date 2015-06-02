@@ -5,6 +5,8 @@ import biz.pada.cook.db.CookDBHelper;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentTransaction;
+import android.app.FragmentManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.view.View;
@@ -57,7 +59,8 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 		// Restore activity state
 		this.updateValuesFromBundle(savedInstanceState);
 		// Map service
-		MapFragment mapFragment=(MapFragment)this.getFragmentManager().findFragmentById(R.id.map);
+		FragmentManager fragmentManager=this.getFragmentManager();
+		MapFragment mapFragment=(MapFragment)fragmentManager.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 		this.hideSystemUI(this.findViewById(R.id.main));
 		// Menu Initialize
@@ -78,15 +81,21 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 				System.out.println("Clicked");
 			}
 		});
+		// Hide fragments
+		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.menu_fragment));
+		fragmentTransaction.commit();
 	}
+	// Menu in the bottom
 	private void slideinMenu(){
 		// Hide menu trigger
 		this.findViewById(R.id.menu_trigger).setVisibility(View.GONE);
 		// Slide in menu
-		View menu=this.findViewById(R.id.menu);
+		View menu=(View)this.findViewById(R.id.menu);
 		menu.setVisibility(View.VISIBLE);
 		menu.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slidein_menu));
-		// Request focus
+		// Request focus, keep menu open.
+		// Menu will hide automatically once this button lose focus.
 		View btn=this.findViewById(R.id.invisible_focusable_btn);
 		if(!btn.requestFocus()){
 			btn.requestFocusFromTouch();
@@ -113,11 +122,21 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 			// Show menu trigger
 			this.findViewById(R.id.menu_trigger).setVisibility(View.VISIBLE);
 		}
-	private void updateValuesFromBundle(Bundle savedInstanceState){ // Restore activity states
+	// Click profile in menu
+	public void clickProfile(View view){
+		FragmentManager fragmentManager=this.getFragmentManager();
+		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
+		fragmentTransaction.show(fragmentManager.findFragmentById(R.id.menu_fragment));
+		fragmentTransaction.commit();
+	}
+	// Restore activity states
+	private void updateValuesFromBundle(Bundle savedInstanceState){
 		if(savedInstanceState!=null){
 			// Restore values
 		}
 	}
+	// Location
 	private void startLocationUpdates(){
 		LocationServices.FusedLocationApi.requestLocationUpdates(
 			this.google, this.location, this);

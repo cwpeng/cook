@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<color name="green_circle_fill">#80ddffdd</color>
+	<color name="panel_background">#80000000</color>
 	<color name="menu_background">#80000000</color>
+	<color name="menu_fragment_background">#ffffffff</color>
 </resources>

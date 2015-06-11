@@ -6,8 +6,41 @@
 	<LinearLayout android:id="@+id/menu_tags"
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
+		android:weightSum="5"
 		android:layout_alignParentTop="true"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:background="@color/menu_fragment_tags_background">
+		<ImageView
+			style="@style/menu_tag"
+			android:layout_weight="1"
+			android:scaleType="centerInside"
+			android:src="@drawable/market"
+		/>
+		<TextView
+			style="@style/menu_tag"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:text="@string/market_buy"
+		/>
+		<TextView
+			style="@style/menu_tag"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:text="@string/market_sell"
+		/>
+		<TextView
+			style="@style/menu_tag"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:text="@string/empty"
+		/>
+		<TextView
+			style="@style/menu_tag"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:text="@string/menu_close"
+			android:onClick="clickCloseMenuFragment"
+		/>
 	</LinearLayout>
 	<FrameLayout
 		android:layout_width="match_parent"

@@ -8,7 +8,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:name="com.google.android.gms.maps.MapFragment"
-		map:cameraZoom="16" />
+		map:cameraZoom="16"
+		map:uiRotateGestures="false" />
 	<FrameLayout android:id="@+id/menu_trigger"
 		android:layout_width="match_parent"
 		android:layout_height="45dp"
@@ -64,30 +65,32 @@
 		android:layout_height="65dp"
 		android:layout_gravity="bottom"
 		android:visibility="gone"
-		android:weightSum="2"
+		android:weightSum="5"
 		android:orientation="horizontal"
 		android:background="@color/menu_background">
-		<LinearLayout android:id="@+id/profile"
-			android:layout_width="wrap_content"
+		<LinearLayout
+			android:layout_width="0px"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:gravity="center"
 			android:orientation="vertical">
 			<ImageView
-				android:layout_width="60dp"
-				android:layout_height="60dp"
-				android:src="@drawable/profile"
-				android:onClick="clickProfile" />
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:scaleType="centerInside"
+				android:src="@drawable/market"
+				android:onClick="clickMarket" />
 		</LinearLayout>
-		<LinearLayout android:id="@+id/store"
-			android:layout_width="wrap_content"
+		<LinearLayout
+			android:layout_width="0px"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:gravity="center"
 			android:orientation="vertical">
 			<ImageView
-				android:layout_width="60dp"
-				android:layout_height="60dp"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:scaleType="centerInside"
 				android:src="@drawable/store" />
 		</LinearLayout>
 		<Button android:id="@+id/invisible_focusable_btn"

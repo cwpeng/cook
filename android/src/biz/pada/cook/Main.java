@@ -24,7 +24,10 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import android.database.Cursor;
 import android.database.sqlite.*;
-public class Main extends Activity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, GoogleMap.OnCameraChangeListener, LocationListener{
+public class Main extends Activity implements
+	OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener,
+	GoogleMap.OnCameraChangeListener, GoogleMap.OnMarkerClickListener,
+	LocationListener{
 	// Static final constants
 	private static final int REQUEST_RESOLVE_ERROR=1001; // Request code to use when launching the resolution activity
     private static final String DIALOG_ERROR="dialog_error"; // Unique tag for the error dialog fragment
@@ -76,11 +79,6 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 				}
 			}
 		});
-		this.findViewById(R.id.store).setOnClickListener(new View.OnClickListener(){
-			public void onClick(View v){
-				System.out.println("Clicked");
-			}
-		});
 		// Hide fragments
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.menu_fragment));
@@ -123,11 +121,19 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 			this.findViewById(R.id.menu_trigger).setVisibility(View.VISIBLE);
 		}
 	// Click profile in menu
-	public void clickProfile(View view){
+	public void clickMarket(View view){
 		FragmentManager fragmentManager=this.getFragmentManager();
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
 		fragmentTransaction.show(fragmentManager.findFragmentById(R.id.menu_fragment));
+		fragmentTransaction.commit();
+	}
+	// Click close in menu fragment
+	public void clickCloseMenuFragment(View view){
+		FragmentManager fragmentManager=this.getFragmentManager();
+		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
+		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.menu_fragment));
 		fragmentTransaction.commit();
 	}
 	// Restore activity states
@@ -216,6 +222,11 @@ public class Main extends Activity implements OnMapReadyCallback, ConnectionCall
 		this.map=map;
 		this.map.getUiSettings().setMyLocationButtonEnabled(false);
 		this.map.setOnCameraChangeListener(this);
+		this.map.setOnMarkerClickListener(this);
+	}
+	// GoogleMap.OnMarkerClickListener implements
+	public boolean onMarkerClick(Marker marker){
+		return true;
 	}
 	// GoogleMap.OnCameraChangeListener implements
 	@Override

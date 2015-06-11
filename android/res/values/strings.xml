@@ -2,13 +2,19 @@
 <resources>
 	<string name="google_map_api_key">AIzaSyAueW1x2FK3Mxg0cHO56Bhmz67_ogVzZlU</string>
     <string name="app_name">天才小廚師</string>
-
-	<string name="signup">請輸入暱稱</string>
-
+	<!-- Common Use -->
 	<string name="network_unavailable">網路未連線</string>
 	<string name="ok">確定</string>
-
+	<string name="empty"></string>
+	<!-- Sign -->
+	<string name="signup">請輸入暱稱</string>
 	<!-- Player -->
 	<string name="player_name">妮不拉</string>
 	<string name="player_rank">廚房學徒一級，總排名 1568</string>
+	<!-- Menu -->
+	<string name="menu_close">X</string>	
+	<!-- Market Menu -->
+	<string name="market">市集</string>
+	<string name="market_buy">買</string>
+	<string name="market_sell">賣</string>
 </resources>

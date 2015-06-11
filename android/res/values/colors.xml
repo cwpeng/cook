@@ -4,4 +4,6 @@
 	<color name="panel_background">#80000000</color>
 	<color name="menu_background">#80000000</color>
 	<color name="menu_fragment_background">#ffffffff</color>
+	<color name="menu_fragment_tags_text">#ffffffff</color>
+	<color name="menu_fragment_tags_background">#ff000000</color>
 </resources>

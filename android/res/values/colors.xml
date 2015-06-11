@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Main -->
 	<color name="green_circle_fill">#80ddffdd</color>
 	<color name="panel_background">#80000000</color>
 	<color name="menu_background">#80000000</color>
+	<!-- Fragment -->
+	<color name="fragment_mask_background">#80ffffff</color>
+	<!-- Action Fragment -->
+	<color name="action_fragment_background">#ffffffff</color>
+	<color name="action_fragment_title_background">#ffeeeeee</color>
+	<!-- Menu Fragment -->
 	<color name="menu_fragment_background">#ffffffff</color>
 	<color name="menu_fragment_tags_text">#ffffffff</color>
 	<color name="menu_fragment_tags_background">#ff000000</color>

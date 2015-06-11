@@ -4,10 +4,10 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 	<fragment xmlns:android="http://schemas.android.com/apk/res/android" xmlns:map="http://schemas.android.com/apk/res-auto"
+		android:name="com.google.android.gms.maps.MapFragment"
 		android:id="@+id/map"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:name="com.google.android.gms.maps.MapFragment"
 		map:cameraZoom="16"
 		map:uiRotateGestures="false" />
 	<FrameLayout android:id="@+id/menu_trigger"
@@ -97,8 +97,19 @@
 			android:layout_width="0dp"
 			android:layout_height="0dp" />
 	</LinearLayout>
+	<View android:id="@+id/fragment_mask"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/fragment_mask_background"
+		android:clickable="true"
+		android:visibility="gone" />
     <fragment android:name="biz.pada.cook.ui.MenuFragment"
 		android:id="@+id/menu_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" />
+    <fragment android:name="biz.pada.cook.ui.ActionFragment"
+		android:id="@+id/action_fragment"
+		android:layout_width="300dp"
+		android:layout_height="400dp"
+		android:layout_gravity="center" />
 </FrameLayout>

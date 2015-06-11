@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/action_fragment_background">
+	<LinearLayout android:id="@+id/action_title"
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:weightSum="3"
+		android:layout_alignParentTop="true"
+		android:orientation="horizontal"
+		android:background="@color/action_fragment_title_background">
+		<TextView
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:text="@string/menu_close"
+			android:onClick="clickCloseActionFragment"
+		/>
+	</LinearLayout>
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_below="@id/action_title">
+	</FrameLayout>
+</RelativeLayout>

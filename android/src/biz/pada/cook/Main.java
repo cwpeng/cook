@@ -1,5 +1,6 @@
 package biz.pada.cook;
 import biz.pada.cook.ui.ShareUI;
+import biz.pada.cook.ui.ActionFragment;
 import biz.pada.cook.util.SphericalUtil;
 import biz.pada.cook.db.CookDBHelper;
 import android.app.Activity;
@@ -79,9 +80,10 @@ public class Main extends Activity implements
 				}
 			}
 		});
-		// Hide fragments
+		// Init fragments other than map
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.menu_fragment));
+		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.action_fragment));
 		fragmentTransaction.commit();
 	}
 	// Menu in the bottom
@@ -120,8 +122,9 @@ public class Main extends Activity implements
 			// Show menu trigger
 			this.findViewById(R.id.menu_trigger).setVisibility(View.VISIBLE);
 		}
-	// Click profile in menu
+	// Click market in menu
 	public void clickMarket(View view){
+		this.findViewById(R.id.fragment_mask).setVisibility(View.VISIBLE);
 		FragmentManager fragmentManager=this.getFragmentManager();
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
@@ -130,10 +133,20 @@ public class Main extends Activity implements
 	}
 	// Click close in menu fragment
 	public void clickCloseMenuFragment(View view){
+		this.findViewById(R.id.fragment_mask).setVisibility(View.GONE);
 		FragmentManager fragmentManager=this.getFragmentManager();
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
 		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.menu_fragment));
+		fragmentTransaction.commit();
+	}
+	// Click close in action fragment
+	public void clickCloseActionFragment(View view){
+		this.findViewById(R.id.fragment_mask).setVisibility(View.GONE);
+		FragmentManager fragmentManager=this.getFragmentManager();
+		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
+		fragmentTransaction.hide(fragmentManager.findFragmentById(R.id.action_fragment));
 		fragmentTransaction.commit();
 	}
 	// Restore activity states
@@ -226,6 +239,12 @@ public class Main extends Activity implements
 	}
 	// GoogleMap.OnMarkerClickListener implements
 	public boolean onMarkerClick(Marker marker){
+		this.findViewById(R.id.fragment_mask).setVisibility(View.VISIBLE);
+		FragmentManager fragmentManager=this.getFragmentManager();
+		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
+		fragmentTransaction.show(fragmentManager.findFragmentById(R.id.action_fragment));
+		fragmentTransaction.commit();
 		return true;
 	}
 	// GoogleMap.OnCameraChangeListener implements

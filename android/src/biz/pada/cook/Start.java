@@ -18,6 +18,7 @@ public class Start extends Activity{
 	private int localResourcesVersion=-1;
 	private int serverResourcesVersion=-1;
 	// Player data
+	private Player player;
 	private long id;
 	private String password;
 	/** Called when the activity is first created. */
@@ -57,7 +58,9 @@ public class Start extends Activity{
 		FrameLayout frame=(FrameLayout)this.findViewById(R.id.start);
 		frame.setOnClickListener(new View.OnClickListener(){
 			public void onClick(View v){
-				Start.this.startActivity(new Intent(Start.this, Main.class));
+				Intent intent=new Intent(Start.this, Main.class);
+				intent.putExtra("player", Start.this.player);
+				Start.this.startActivity(intent);
 			}
 		});
 	}
@@ -105,6 +108,7 @@ public class Start extends Activity{
 		public void signinCallback(Player player){
 			// ShareUI.alert(this, player.id+","+player.name+","+player.token);
 			// Check server resources version
+			this.player=player;
 			this.checkResourcesVersion();
 		}
 	// Check resources version from server

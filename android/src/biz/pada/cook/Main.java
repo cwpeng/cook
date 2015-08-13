@@ -1,8 +1,11 @@
 package biz.pada.cook;
+import java.util.HashMap;
 import biz.pada.cook.ui.ShareUI;
 import biz.pada.cook.ui.ActionFragment;
 import biz.pada.cook.util.SphericalUtil;
 import biz.pada.cook.db.CookDBHelper;
+import biz.pada.cook.core.Player;
+import biz.pada.cook.core.Base;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -35,11 +38,11 @@ public class Main extends Activity implements
 	// Instance variables
 	private GoogleApiClient google;
 	private LocationRequest location;
-	// Map objects
+	// Map object
 	private GoogleMap map;
-	private Marker marker;
-	private Circle circle;
-	private Marker[] markers;
+	// Game objects
+	private Player player;
+	private HashMap<Long, Base> bases;
 	// Track whether this activity is already resolving an error about coonecting to Google Play Service
 	private boolean triedResolvingError;
 	/** Called when the activity is first created. */
@@ -47,6 +50,8 @@ public class Main extends Activity implements
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
+		// Get player from Start activity
+		this.player=(Player)this.getIntent().getSerializableExtra("player");
 		// Google API client
 		this.google=new GoogleApiClient.Builder(this)
 			.addConnectionCallbacks(this)
@@ -239,6 +244,7 @@ public class Main extends Activity implements
 	}
 	// GoogleMap.OnMarkerClickListener implements
 	public boolean onMarkerClick(Marker marker){
+		Base base=this.bases.get(Long.parseLong(marker.getSnippet()));
 		this.findViewById(R.id.fragment_mask).setVisibility(View.VISIBLE);
 		FragmentManager fragmentManager=this.getFragmentManager();
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
@@ -250,18 +256,38 @@ public class Main extends Activity implements
 	// GoogleMap.OnCameraChangeListener implements
 	@Override
 	public void onCameraChange(CameraPosition position){
+		if(this.player.marker==null){
+			return;
+		}
 		// Update resource bases markers
+		// Only show bases in 10 kilometers respect to player's position
 		LatLngBounds bounds=this.map.getProjection().getVisibleRegion().latLngBounds;
+		LatLng playerPosition=this.player.marker.getPosition();
+		LatLng north=SphericalUtil.computeOffset(playerPosition, 10000, 0);
+		LatLng east=SphericalUtil.computeOffset(playerPosition, 10000, 90);
+		LatLng south=SphericalUtil.computeOffset(playerPosition, 10000, 180);
+		LatLng west=SphericalUtil.computeOffset(playerPosition, 10000, 270);
 		SQLiteDatabase db=(new CookDBHelper(this)).getReadableDatabase();
 		Cursor cursor=db.query("material_base", new String[]{"id", "lat", "lng"},
-			"(lat BETWEEN "+bounds.southwest.latitude+" and "+bounds.northeast.latitude+") and (lng BETWEEN "+bounds.southwest.longitude+" and "+bounds.northeast.longitude+")",
+			"(lat BETWEEN "+Math.max(bounds.southwest.latitude, south.latitude)+" and "+Math.min(bounds.northeast.latitude, north.latitude)+") and (lng BETWEEN "+Math.max(bounds.southwest.longitude, west.longitude)+" and "+Math.min(bounds.northeast.longitude, east.longitude)+")",
 			null, null, null, null);
-		if(cursor!=null&&cursor.moveToFirst()){
+		if(cursor==null){
+			return;
+		}
+		if(this.bases==null){
+			this.bases=new HashMap<Long, Base>();
+		}
+		if(cursor.moveToFirst()){
+			int idIndex=cursor.getColumnIndex("id");
 			int latIndex=cursor.getColumnIndex("lat");
 			int lngIndex=cursor.getColumnIndex("lng");
+			long id;
 			do{
-				this.map.addMarker(new MarkerOptions()
-					.position(new LatLng(cursor.getDouble(latIndex), cursor.getDouble(lngIndex))));
+				id=cursor.getLong(idIndex);
+				if(!this.bases.containsKey(id)){
+					this.bases.put(id, new Base(id, this.map.addMarker(new MarkerOptions().snippet(Long.toString(id))
+						.position(new LatLng(cursor.getDouble(latIndex), cursor.getDouble(lngIndex))))));
+				}
 			}while(cursor.moveToNext());
 			cursor.close();
 		}
@@ -274,22 +300,22 @@ public class Main extends Activity implements
 		}
 		LatLng position=new LatLng(location.getLatitude(), location.getLongitude());
 		// Ignore subtle(less than 3 meters) location change
-		if(this.marker!=null&&SphericalUtil.computeDistanceBetween(position, this.marker.getPosition())<3){
+		if(this.player.marker!=null&&SphericalUtil.computeDistanceBetween(position, this.player.marker.getPosition())<3){
 			return;
 		}
 		// Update player marker and collection circle
-		if(this.marker==null){
-			this.circle=this.map.addCircle(new CircleOptions()
+		if(this.player.marker==null){
+			this.player.range=this.map.addCircle(new CircleOptions()
 				.center(position)
 				.radius(500)
 				.fillColor(this.getResources().getColor(R.color.green_circle_fill))
 				.strokeWidth(0));
-			this.marker=this.map.addMarker(new MarkerOptions()
+			this.player.marker=this.map.addMarker(new MarkerOptions()
 				.position(position)
 				.icon(BitmapDescriptorFactory.fromResource(R.drawable.cook_0)));
 		}else{
-			this.circle.setCenter(position);
-			this.marker.setPosition(position);
+			this.player.range.setCenter(position);
+			this.player.marker.setPosition(position);
 		}
 		// Update map camera: before get visible region bounds
 		this.map.moveCamera(CameraUpdateFactory.newLatLng(position));

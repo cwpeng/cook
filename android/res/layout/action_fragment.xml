@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/action_fragment_background">
-	<LinearLayout android:id="@+id/action_title"
+	<LinearLayout android:id="@+id/action_fragment_title"
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
 		android:weightSum="3"
@@ -19,9 +19,10 @@
 			android:onClick="clickCloseActionFragment"
 		/>
 	</LinearLayout>
-	<FrameLayout
+	<LinearLayout android:id="@+id/action_fragment_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/action_title">
-	</FrameLayout>
+		android:layout_below="@id/action_fragment_title"
+		android:orientation="vertical">
+	</LinearLayout>
 </RelativeLayout>

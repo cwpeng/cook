@@ -12,11 +12,13 @@ public class CookDBHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db){
 		db.execSQL("CREATE TABLE material_base (id INTEGER PRIMARY KEY,lat REAL,lng REAL,materials TEXT)");
 		db.execSQL("CREATE UNIQUE INDEX geolocation ON material_base (lat,lng)");
+		db.execSQL("CREATE TABLE material (id INTEGER PRIMARY KEY,name TEXT,description TEXT)");
 	}
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
 		// This database is only a cache for online data, so its upgrade policy is
 		// to simply to discard the data and start over
 		db.execSQL("DROP TABLE IF EXISTS material_base");
+		db.execSQL("DROP TABLE IF EXISTS material");
 		onCreate(db);
 	}
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion){

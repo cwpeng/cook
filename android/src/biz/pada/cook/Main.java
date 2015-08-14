@@ -244,12 +244,17 @@ public class Main extends Activity implements
 	}
 	// GoogleMap.OnMarkerClickListener implements
 	public boolean onMarkerClick(Marker marker){
+		// Get related data
 		Base base=this.bases.get(Long.parseLong(marker.getSnippet()));
+		// Show mask
 		this.findViewById(R.id.fragment_mask).setVisibility(View.VISIBLE);
+		// Show fragment
 		FragmentManager fragmentManager=this.getFragmentManager();
+		ActionFragment actionFragment=(ActionFragment)fragmentManager.findFragmentById(R.id.action_fragment);
+		actionFragment.setBase(base);
 		FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
-		fragmentTransaction.show(fragmentManager.findFragmentById(R.id.action_fragment));
+		fragmentTransaction.show(actionFragment);
 		fragmentTransaction.commit();
 		return true;
 	}
@@ -268,7 +273,7 @@ public class Main extends Activity implements
 		LatLng south=SphericalUtil.computeOffset(playerPosition, 10000, 180);
 		LatLng west=SphericalUtil.computeOffset(playerPosition, 10000, 270);
 		SQLiteDatabase db=(new CookDBHelper(this)).getReadableDatabase();
-		Cursor cursor=db.query("material_base", new String[]{"id", "lat", "lng"},
+		Cursor cursor=db.query("material_base", new String[]{"id", "lat", "lng", "materials"},
 			"(lat BETWEEN "+Math.max(bounds.southwest.latitude, south.latitude)+" and "+Math.min(bounds.northeast.latitude, north.latitude)+") and (lng BETWEEN "+Math.max(bounds.southwest.longitude, west.longitude)+" and "+Math.min(bounds.northeast.longitude, east.longitude)+")",
 			null, null, null, null);
 		if(cursor==null){
@@ -281,11 +286,19 @@ public class Main extends Activity implements
 			int idIndex=cursor.getColumnIndex("id");
 			int latIndex=cursor.getColumnIndex("lat");
 			int lngIndex=cursor.getColumnIndex("lng");
+			int materialsIndex=cursor.getColumnIndex("materials");
 			long id;
+			String[] materials;
+			long[] materialIds;
 			do{
 				id=cursor.getLong(idIndex);
 				if(!this.bases.containsKey(id)){
-					this.bases.put(id, new Base(id, this.map.addMarker(new MarkerOptions().snippet(Long.toString(id))
+					materials=cursor.getString(materialsIndex).split(",");
+					materialIds=new long[materials.length];
+					for(int i=0;i<materials.length;i++){
+						materialIds[i]=Long.parseLong(materials[i]);
+					}
+					this.bases.put(id, new Base(id, materialIds, this.map.addMarker(new MarkerOptions().snippet(Long.toString(id))
 						.position(new LatLng(cursor.getDouble(latIndex), cursor.getDouble(lngIndex))))));
 				}
 			}while(cursor.moveToNext());

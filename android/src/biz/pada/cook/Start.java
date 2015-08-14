@@ -15,8 +15,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 public class Start extends Activity{
+	// Resources version
 	private int localResourcesVersion=-1;
 	private int serverResourcesVersion=-1;
+	// Resources loaded count
+	private int totalResources=2;
+	private int loadedResources=0;
 	// Player data
 	private Player player;
 	private long id;
@@ -136,6 +140,7 @@ public class Start extends Activity{
 	// Load updated resources from server
 	private void loadResources(){
 		if(Network.isOnline(this)){
+			(new MaterialsLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterials");
 			(new MaterialBasesLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterialBases");
 		}else{
 			Network.showNetworkUnavailable(this);
@@ -143,15 +148,18 @@ public class Start extends Activity{
 	}
 		public void loadResourcesCallback(boolean result){
 			if(result){
-				ShareUI.alert(this, "Loaded");
-				// Update local resources version
-				SharedPreferences config=this.getPreferences(Context.MODE_PRIVATE);
-				SharedPreferences.Editor editor=config.edit();
-				editor.putInt("resources-version", this.serverResourcesVersion);
-				editor.commit();
-				this.localResourcesVersion=this.serverResourcesVersion;
-				// Ready to game
-				this.readyToGame();
+				this.loadedResources++;
+				if(this.loadedResources>=this.totalResources){
+					ShareUI.alert(this, "Loaded");
+					// Update local resources version
+					SharedPreferences config=this.getPreferences(Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor=config.edit();
+					editor.putInt("resources-version", this.serverResourcesVersion);
+					editor.commit();
+					this.localResourcesVersion=this.serverResourcesVersion;
+					// Ready to game
+					this.readyToGame();
+				}
 			}else{
 				ShareUI.alert(this, "Load Failed");
 			}

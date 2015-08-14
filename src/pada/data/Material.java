@@ -142,7 +142,7 @@ public class Material implements java.io.Serializable{
 	public String name;
 	public String description;
 	public long geometrySet;
-	public int cookbook;
+	public int cookbook; // The number of how many cookbooks contain this material
 	public Material(long id, String name, String description, long geometrySet, int cookbook){
 		this.id=id;
 		this.name=name;

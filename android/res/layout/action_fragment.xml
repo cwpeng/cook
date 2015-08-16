@@ -3,13 +3,25 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/action_fragment_background">
-	<LinearLayout android:id="@+id/action_fragment_title"
+	<LinearLayout android:id="@+id/action_fragment_head"
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
-		android:weightSum="3"
+		android:weightSum="5"
 		android:layout_alignParentTop="true"
 		android:orientation="horizontal"
 		android:background="@color/action_fragment_title_background">
+		<ImageView android:id="@+id/action_fragment_icon"
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:scaleType="centerInside"
+		/>
+		<TextView android:id="@+id/action_fragment_title"
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="3"
+			android:gravity="center"
+		/>
 		<TextView
 			android:layout_width="0px"
 			android:layout_height="match_parent"
@@ -22,7 +34,7 @@
 	<LinearLayout android:id="@+id/action_fragment_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/action_fragment_title"
+		android:layout_below="@id/action_fragment_head"
 		android:orientation="vertical">
 	</LinearLayout>
 </RelativeLayout>

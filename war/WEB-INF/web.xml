@@ -28,6 +28,23 @@
 <listener>
 	<listener-class>pada.ContextListener</listener-class>
 </listener>
+<!-- Upload Management -->
+<servlet>
+	<servlet-name>util.GetUploadURL</servlet-name>
+	<servlet-class>pada.servlet.util.GetUploadURL</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>util.GetUploadURL</servlet-name>
+	<url-pattern>/exe/util/GetUploadURL</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>util.UploadMaterialImage</servlet-name>
+	<servlet-class>pada.servlet.util.UploadMaterialImage</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>util.UploadMaterialImage</servlet-name>
+	<url-pattern>/exe/util/UploadMaterialImage</url-pattern>
+</servlet-mapping>
 <!-- Material Management -->
 <servlet>
 	<servlet-name>data.GetMaterials</servlet-name>

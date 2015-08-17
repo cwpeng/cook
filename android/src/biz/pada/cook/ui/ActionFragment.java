@@ -33,12 +33,12 @@ public class ActionFragment extends Fragment{
 		}else{ // Show
 			Activity activity=this.getActivity();
 			if(this.base!=null){
-				final Base.State state=this.base.getState();
-				// Refresh title
+				Base.State state=this.base.getState();
+				// Add title
 				Material material=Material.getMaterial(activity, state.currentMaterialId);
 				TextView title=(TextView)activity.findViewById(R.id.action_fragment_title);
-				title.setText(this.base.id+":"+material.name);
-				// Refresh content
+				title.setText(material.name);
+				// Add content
 				LinearLayout content=(LinearLayout)activity.findViewById(R.id.action_fragment_content);
 				LinearLayout row;
 				content.removeAllViews();
@@ -52,24 +52,38 @@ public class ActionFragment extends Fragment{
 					row.addView(text);
 				}
 				content.addView(row);
-				final TextView next=new TextView(activity);
-				next.setText((state.nextCountdown/1000)+" seconds");
-				content.addView(next);
+				// Add countdown text
+				TextView countdown=new TextView(activity);
+				content.addView(countdown);
 				// Set timer
-				this.timer=new CountDownTimer(state.nextCountdown, 1000){
-					public void onTick(long millisUntilFinished){
-						state.nextCountdown=(int)millisUntilFinished;
-						int seconds=state.nextCountdown/1000;
-						int hours=seconds/3600;
-						int minutes=(seconds%3600)/60;
-						seconds=seconds%60;
-						next.setText(hours+":"+minutes+":"+seconds);
-					}
-					public void onFinish(){
-						
-					}
-				}.start();
+				this.timer=new MaterialChangeTimer(state, title, countdown);
+				this.timer.start();
 			}
+		}
+	}
+	// Private static class
+	private static class MaterialChangeTimer extends CountDownTimer{
+		private Base.State state;
+		private TextView title;
+		private TextView countdown;
+		private MaterialChangeTimer(Base.State state, TextView title, TextView countdown){
+			super(state.nextCountdown, 1000);
+			this.state=state;
+			this.title=title;
+			this.countdown=countdown;
+		}
+		@Override
+		public void onTick(long millisUntilFinished){
+			this.state.nextCountdown=(int)millisUntilFinished;
+			int seconds=this.state.nextCountdown/1000;
+			int hours=seconds/3600;
+			int minutes=(seconds%3600)/60;
+			seconds=seconds%60;
+			this.countdown.setText((hours<10?"0"+hours:hours)+":"+(minutes<10?"0"+minutes:minutes)+":"+(seconds<10?"0"+seconds:seconds));
+		}
+		@Override
+		public void onFinish(){
+			
 		}
 	}
 }

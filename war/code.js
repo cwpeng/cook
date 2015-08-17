@@ -1,4 +1,4 @@
-var gm={"state":{}, "data":{}, "evts":{}, "ui":{}, "material":{}, "cookbook":{}, "geometry":{}, "base":{}};
+var gm={"state":{}, "data":{}, "evts":{}, "ui":{}, "material":{}, "cookbook":{}, "geometry":{}, "base":{}, "img":{"material":{}, "cookbook":{}}};
 window.onload=function(){
 	gm.state.page="welcome";
 };
@@ -20,6 +20,15 @@ gm.ajax=function(args){
 		req.open(args.method, args.src+"?"+args.args, true);
 		req.send();
 	}
+};
+gm.getUploadURL=function(url, callback){
+	gm.ajax({"method":"get", "src":"/exe/util/GetUploadURL",
+		"args":"url="+url,
+		"callback":function(){
+			callback(JSON.parse(this.responseText).url);
+			callback=null;
+		}
+	});
 };
 gm.createElement=function(tagName,settings,parentElement){
 	var obj=document.createElement(tagName);
@@ -87,12 +96,12 @@ gm.ui.hideMask=function(){
 };
 /* Material Management */
 gm.material.init=function(){
+	if(!gm.data.geometrySets){
+		gm.geometry.getSets(gm.material.init);
+		return;
+	}
 	if(!gm.data.materials){
-		if(gm.data.geometrySets){
-			gm.material.get();
-		}else{
-			gm.geometry.getSets(gm.material.init);
-		}
+		gm.material.get();
 	}
 };
 gm.material.create=function(form){
@@ -205,12 +214,12 @@ gm.material.update=function(){
 	};
 /* Cookbook Management */
 gm.cookbook.init=function(){
+	if(!gm.data.materials){
+		gm.material.get(gm.cookbook.init);
+		return;
+	}
 	if(!gm.data.cookbooks){
-		if(gm.data.materials){
-			gm.cookbook.get();
-		}else{
-			gm.material.get(gm.cookbook.init);
-		}
+		gm.cookbook.get();
 	}
 };
 gm.cookbook.get=function(){
@@ -500,4 +509,52 @@ gm.base.updateSummary=function(){
 		gm.id("base-del-btn").disabled=true;
 		container.innerHTML="Data Unavailable".bold();
 	}
+};
+/* Image Management */
+gm.img.get=function(){
+	
+};
+/* Image Material Management */
+gm.img.material.init=function(){
+	if(!gm.data.geometrySets){
+		gm.geometry.getSets(gm.img.material.init);
+		return;
+	}
+	if(!gm.data.materials){
+		gm.material.get(gm.img.material.init);
+		return;
+	}
+	if(!gm.data.imgs){
+		gm.img.get(gm.img.material.init);
+		return;
+	}
+	gm.img.material.update();
+};
+gm.img.material.update=function(){
+	var list=gm.id("img-material-list");
+	list.innerHTML="";
+	var material;
+	var form;
+	for(var i=0;i<gm.data.materials.length;i++){
+		material=gm.data.materials[i];
+		form=gm.createElement("form", {"atrs":{"method":"post", "enctype":"multipart/form-data", "target":"upload-frame"},
+			"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}}, list);
+		form.innerHTML="<div>"+material.name.bold()+" "+material.description+"</div>";
+		form.innerHTML+="<div><input type='file' name='material-"+material.id+"' /> <input type='submit' value='Upload' /></div>";
+	}
+	gm.getUploadURL("/exe/util/UploadMaterialImage", gm.img.material.refreshUploadURL);
+};
+	gm.img.material.refreshUploadURL=function(url){
+		var list=gm.id("img-material-list");
+		var forms=list.getElementsByTagName("form");
+		for(var i=0;i<forms.length;i++){
+			forms[i].action=url;
+		}
+	};
+gm.img.material.uploaded=function(result){
+	
+};
+/* Image Cookbook Management */
+gm.img.cookbook.init=function(){
+	
 };

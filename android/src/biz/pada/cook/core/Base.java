@@ -13,13 +13,17 @@ public class Base{
 	// Get current collectable material id based on material number and time.
 	// Change every 4 hours.
 	public Base.State getState(){
-		int changeInterval=4*60*60*1000;
-		// About 100 meters to shift offset
-		int hourOffset=(((int)((this.marker.getPosition().latitude+this.marker.getPosition().longitude)*1000))%24)*60*60*1000;
-		long seed=System.currentTimeMillis()+hourOffset;
-		int nextCountdown=changeInterval-(int)(seed%changeInterval);
-		int currentIndex=(int)((seed/changeInterval)%this.materialIds.length);
-		return new Base.State(this.materialIds[currentIndex], nextCountdown);
+		if(this.materialIds.length>1){
+			int changeInterval=4*60*60*1000;
+			// About 100 meters to shift offset
+			int hourOffset=(((int)((this.marker.getPosition().latitude+this.marker.getPosition().longitude)*1000))%24)*60*60*1000;
+			long seed=System.currentTimeMillis()+hourOffset;
+			int nextCountdown=changeInterval-(int)(seed%changeInterval);
+			int currentIndex=(int)((seed/changeInterval)%this.materialIds.length);
+			return new Base.State(this.materialIds[currentIndex], nextCountdown);
+		}else{
+			return new Base.State(this.materialIds[0], -1);
+		}
 	}
 	// Static class for Base state
 	public static class State{

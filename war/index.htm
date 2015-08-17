@@ -15,6 +15,9 @@
 	<div class="item" onclick="gm.changePage('cookbook', gm.cookbook.init);">Cookbook</div>
 	<div class="item" onclick="gm.changePage('geometry', gm.geometry.init);">Geometry</div>
 	<div class="item" onclick="gm.changePage('base', gm.base.init);">Material Base</div>
+	<div class="title">Image Data</div>
+	<div class="item" onclick="gm.changePage('img-material', gm.img.material.init);">Material</div>
+	<div class="item" onclick="gm.changePage('img-cookbook', gm.img.cookbook.init);">Cookbook</div>
 	<div class="title">Player Data</div>
 	<div class="title">Statistics</div>
 </div>
@@ -66,6 +69,11 @@
 	<h3>Material Base Summary</h3>
 	<div id="base-summary"></div>
 </div>
+<div class="page hide" id="img-material">
+	<h3>Material Image List</h3>
+	<div id="img-material-list"></div>
+</div>
 <div class="page mask" id="mask">... Loading ... &nbsp;</div>
+<iframe class="hide" name="upload-frame"></iframe>
 </body>
 </html>

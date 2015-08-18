@@ -214,6 +214,10 @@ gm.material.update=function(){
 	};
 /* Cookbook Management */
 gm.cookbook.init=function(){
+	if(!gm.data.geometrySets){
+		gm.geometry.getSets(gm.cookbook.init);
+		return;
+	}
 	if(!gm.data.materials){
 		gm.material.get(gm.cookbook.init);
 		return;
@@ -222,11 +226,15 @@ gm.cookbook.init=function(){
 		gm.cookbook.get();
 	}
 };
-gm.cookbook.get=function(){
+gm.cookbook.get=function(callback){
 	// Get Data
 	gm.ajax({"method":"get", "src":"/exe/data/GetCookbooks", "args":"", "callback":function(){
 		gm.data.cookbooks=JSON.parse(this.responseText);
 		gm.cookbook.update();
+		if(typeof callback=="function"){
+			callback();
+		}
+		callback=null;
 	}});
 };
 gm.cookbook.update=function(){
@@ -511,8 +519,32 @@ gm.base.updateSummary=function(){
 	}
 };
 /* Image Management */
-gm.img.get=function(){
-	
+gm.img.get=function(callback){
+	// Get Data
+	gm.ajax({"method":"get", "src":"/exe/data/GetImages", "args":"", "callback":function(){
+		gm.data.imgs=JSON.parse(this.responseText);
+		if(typeof callback=="function"){
+			callback();
+		}
+		callback=null;
+	}});
+};
+gm.img.del=function(imgName, callback){
+	if(!window.confirm("Are you sure?")){
+		return;
+	}
+	gm.ajax({"method":"post", "src":"/exe/data/DeleteImage",
+		"args":"name="+imgName,
+		"callback":function(){
+			gm.data.imgs[imgName]=null; delete gm.data.imgs[imgName];
+			alert("Deleted");
+			if(typeof callback=="function"){
+				callback(imgName);
+			}
+			callback=null;
+			imgName=null;
+		}
+	});
 };
 /* Image Material Management */
 gm.img.material.init=function(){
@@ -534,13 +566,19 @@ gm.img.material.update=function(){
 	var list=gm.id("img-material-list");
 	list.innerHTML="";
 	var material;
+	var imgName;
 	var form;
 	for(var i=0;i<gm.data.materials.length;i++){
 		material=gm.data.materials[i];
+		imgName="material-"+material.id;
 		form=gm.createElement("form", {"atrs":{"method":"post", "enctype":"multipart/form-data", "target":"upload-frame"},
 			"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}}, list);
 		form.innerHTML="<div>"+material.name.bold()+" "+material.description+"</div>";
-		form.innerHTML+="<div><input type='file' name='material-"+material.id+"' /> <input type='submit' value='Upload' /></div>";
+		if(gm.data.imgs[imgName]){
+			form.innerHTML+="<div><img src='"+gm.data.imgs[imgName].url+"=s64' /> <input type='button' value='Delete' onclick='gm.img.del(\""+imgName+"\", gm.img.material.deleted.bind(this.parentNode));' /></div>";
+		}else{
+			form.innerHTML+="<div><input type='file' name='"+imgName+"' /> <input type='submit' value='Upload' /></div>";
+		}
 	}
 	gm.getUploadURL("/exe/util/UploadMaterialImage", gm.img.material.refreshUploadURL);
 };
@@ -552,9 +590,71 @@ gm.img.material.update=function(){
 		}
 	};
 gm.img.material.uploaded=function(result){
-	
+	if(result.error){
+		alert("Upload Error");
+	}else{
+		gm.data.imgs[result.name]={"url":result.url};
+		gm.img.material.update();
+	}
+};
+gm.img.material.deleted=function(imgName){
+	this.innerHTML="<input type='file' name='"+imgName+"' /> <input type='submit' value='Upload' />";
 };
 /* Image Cookbook Management */
 gm.img.cookbook.init=function(){
-	
+	if(!gm.data.geometrySets){
+		gm.geometry.getSets(gm.cookbook.init);
+		return;
+	}
+	if(!gm.data.materials){
+		gm.material.get(gm.img.cookbook.init);
+		return;
+	}
+	if(!gm.data.cookbooks){
+		gm.cookbook.get(gm.img.cookbook.init);
+		return;
+	}
+	if(!gm.data.imgs){
+		gm.img.get(gm.img.cookbook.init);
+		return;
+	}
+	gm.img.cookbook.update();
+};
+gm.img.cookbook.update=function(){
+	var list=gm.id("img-cookbook-list");
+	list.innerHTML="";
+	var cookbook;
+	var imgName;
+	var form;
+	for(var i=0;i<gm.data.cookbooks.length;i++){
+		cookbook=gm.data.cookbooks[i];
+		imgName="cookbook-"+cookbook.id;
+		form=gm.createElement("form", {"atrs":{"method":"post", "enctype":"multipart/form-data", "target":"upload-frame"},
+			"stys":{"backgroundColor":i%2==0?"#eeeeee":"#cccccc"}}, list);
+		form.innerHTML="<div>"+cookbook.name.bold()+" "+cookbook.description+"</div>";
+		if(gm.data.imgs[imgName]){
+			form.innerHTML+="<div><img src='"+gm.data.imgs[imgName].url+"=s64' /> <input type='button' value='Delete' onclick='gm.img.del(\""+imgName+"\", gm.img.cookbook.deleted.bind(this.parentNode));' /></div>";
+		}else{
+			form.innerHTML+="<div><input type='file' name='"+imgName+"' /> <input type='submit' value='Upload' /></div>";
+		}
+	}
+	gm.getUploadURL("/exe/util/UploadCookbookImage", gm.img.cookbook.refreshUploadURL);
+};
+	gm.img.cookbook.refreshUploadURL=function(url){
+		var list=gm.id("img-cookbook-list");
+		var forms=list.getElementsByTagName("form");
+		for(var i=0;i<forms.length;i++){
+			forms[i].action=url;
+		}
+	};
+gm.img.cookbook.uploaded=function(result){
+	if(result.error){
+		alert("Upload Error");
+	}else{
+		gm.data.imgs[result.name]={"url":result.url};
+		gm.img.cookbook.update();
+	}
+};
+gm.img.cookbook.deleted=function(imgName){
+	this.innerHTML="<input type='file' name='"+imgName+"' /> <input type='submit' value='Upload' />";
 };

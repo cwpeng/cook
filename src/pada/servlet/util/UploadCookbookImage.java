@@ -11,7 +11,7 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
-public class UploadMaterialImage extends HttpServlet{
+public class UploadCookbookImage extends HttpServlet{
 	private BlobstoreService blobstoreService=BlobstoreServiceFactory.getBlobstoreService();
 	private ImagesService imagesService=ImagesServiceFactory.getImagesService();
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -36,7 +36,7 @@ public class UploadMaterialImage extends HttpServlet{
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("text/html");
 		PrintWriter out=response.getWriter();
-		out.print("<script>window.parent.gm.img.material.uploaded("+result+");</script>");
+		out.print("<script>window.parent.gm.img.cookbook.uploaded("+result+");</script>");
 		out.flush(); out.close();
 	}
 }

@@ -1,6 +1,9 @@
 body{
 width:1050px;margin:0px auto;font-size:15px;font-family:"微軟正黑體","新細明體",Arial,Helvetica,sans-serif;
 }
+img{
+vertical-align:middle;
+}
 .headline{
 text-align:center;font-size:1.2em;font-weight:bold;margin:10px 0px;
 }

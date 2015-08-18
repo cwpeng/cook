@@ -45,6 +45,31 @@
 	<servlet-name>util.UploadMaterialImage</servlet-name>
 	<url-pattern>/exe/util/UploadMaterialImage</url-pattern>
 </servlet-mapping>
+<servlet>
+	<servlet-name>util.UploadCookbookImage</servlet-name>
+	<servlet-class>pada.servlet.util.UploadCookbookImage</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>util.UploadCookbookImage</servlet-name>
+	<url-pattern>/exe/util/UploadCookbookImage</url-pattern>
+</servlet-mapping>
+<!-- Image Management -->
+<servlet>
+	<servlet-name>data.GetImages</servlet-name>
+	<servlet-class>pada.servlet.data.GetImages</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.GetImages</servlet-name>
+	<url-pattern>/exe/data/GetImages</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>data.DeleteImage</servlet-name>
+	<servlet-class>pada.servlet.data.DeleteImage</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>data.DeleteImage</servlet-name>
+	<url-pattern>/exe/data/DeleteImage</url-pattern>
+</servlet-mapping>
 <!-- Material Management -->
 <servlet>
 	<servlet-name>data.GetMaterials</servlet-name>

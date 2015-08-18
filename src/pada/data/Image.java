@@ -11,7 +11,7 @@ import com.google.appengine.api.memcache.*;
 public class Image implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
-	public static boolean createImage(String name, BlobKey blobKey){
+	public static boolean createImage(String name, BlobKey blobKey, String publicURL){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
@@ -19,6 +19,7 @@ public class Image implements java.io.Serializable{
 			try{
 				Entity img=new Entity("Image", name);
 				img.setUnindexedProperty("blob-key", blobKey);
+				img.setUnindexedProperty("public-url", publicURL);
 				datastore.put(img);
 				txn.commit();
 				// 清空快取
@@ -44,7 +45,7 @@ public class Image implements java.io.Serializable{
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		try{
 			Entity entity=datastore.get(KeyFactory.createKey("Image", name));
-			return new Image(entity.getKey().getName(), (BlobKey)entity.getProperty("blob-key"));
+			return new Image(entity.getKey().getName(), (BlobKey)entity.getProperty("blob-key"), (String)entity.getProperty("public-url"));
 		}catch(Exception e){
 			Logger.getLogger(Image.class.getName()).warning(e.toString());
 			return null;
@@ -58,33 +59,35 @@ public class Image implements java.io.Serializable{
 			Iterable<Entity> entities= DatastoreServiceFactory.getDatastoreService().prepare(query).asIterable();
 			List<Image> list=new ArrayList<Image>();
 			for(Entity entity: entities){
-				list.add(new Image(entity.getKey().getName(), (BlobKey)entity.getProperty("blob-key")));
+				list.add(new Image(entity.getKey().getName(), (BlobKey)entity.getProperty("blob-key"), (String)entity.getProperty("public-url")));
 			}
 			imgs=list.toArray(new Image[0]);
 			cache.put("Images", imgs);
 		}
 		return imgs;
 	}
-	public static boolean deleteImage(String name){
+	public static BlobKey deleteImage(String name){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){
 			Transaction txn=datastore.beginTransaction();
 			try{
-				datastore.delete(KeyFactory.createKey("Image", name));
+				Entity img=datastore.get(KeyFactory.createKey("Image", name));
+				BlobKey blobKey=(BlobKey)img.getProperty("blob-key");
+				datastore.delete(img.getKey());
 				txn.commit();
 				// 清空快取
 				MemcacheServiceFactory.getMemcacheService().delete("Images");
-				return true;
+				return blobKey;
 			}catch(ConcurrentModificationException e){
 				if(retries==0){
 					Logger.getLogger(Image.class.getName()).warning(e.toString());
-					return false;
+					return null;
 				}
 				retries--;
 			}catch(Exception e){
 				Logger.getLogger(Image.class.getName()).warning(e.toString());
-				return false;
+				return null;
 			}finally{
 				if(txn.isActive()){
 					txn.rollback();
@@ -95,8 +98,10 @@ public class Image implements java.io.Serializable{
 	// Instance Definition
 	public String name;
 	public BlobKey blobKey;
-	public Image(String name, BlobKey blobKey){
+	public String publicURL;
+	public Image(String name, BlobKey blobKey, String publicURL){
 		this.name=name;
 		this.blobKey=blobKey;
+		this.publicURL=publicURL;
 	}
 }

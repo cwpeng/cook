@@ -17,7 +17,7 @@ public class MaterialsLoader extends AsyncTask<String, Void, Boolean>{
 	}
 	@Override
 	protected void onPostExecute(Boolean result){
-		this.startActivity.loadResourcesCallback(result);
+		this.startActivity.loadResourcesFinished(result);
 	}
 	@Override
 	protected Boolean doInBackground(String... urls){

@@ -10,14 +10,18 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
-public class MaterialBasesLoader extends AsyncTask<String, Void, Boolean>{
+public class ImagesLoader extends AsyncTask<String, Integer, Boolean>{
 	private Start startActivity;
-	public MaterialBasesLoader(Start startActivity){
+	public ImagesLoader(Start startActivity){
 		this.startActivity=startActivity;
 	}
 	@Override
 	protected void onPostExecute(Boolean result){
-		this.startActivity.loadResourcesFinished(result);
+		this.startActivity.loadImagesFinished(result);
+	}
+	@Override
+	protected void onProgressUpdate(Integer... values /* completed percentage */){
+		this.startActivity.loadImagesProgress(values[0]);
 	}
 	@Override
 	protected Boolean doInBackground(String... urls){
@@ -32,8 +36,20 @@ public class MaterialBasesLoader extends AsyncTask<String, Void, Boolean>{
 			// Starts the query
 			conn.connect();
 			in=conn.getInputStream();
-			// Convert the InputStream into a JSON Array and Save to local SQLite database
-			return this.saveToDB(this.readAsJsonArray(in));
+			// Convert the InputStream into a JSON Array and Download images
+			JsonArray list=this.readAsJsonArray(in);
+			int downloaded=0;
+			int total=list.size();
+			this.publishProgress(0);
+			for(int i=0;i<list.size();i++){
+				if(this.downloadImage(list.get(i).getAsJsonObject())){
+					downloaded++;
+					this.publishProgress((int)(100*(downloaded/(double)total)));
+				}else{
+					return false;
+				}
+			}
+			return true;
 		}catch(IOException e){
 			e.printStackTrace();
 			return false;
@@ -62,34 +78,42 @@ public class MaterialBasesLoader extends AsyncTask<String, Void, Boolean>{
 		jsonReader.setLenient(true);
 		return (new JsonParser()).parse(jsonReader).getAsJsonArray();
 	}
-	private boolean saveToDB(JsonArray bases){
-		SQLiteDatabase db=(new CookDBHelper(this.startActivity)).getWritableDatabase();
-		// Create a new map of values, where column names are the keys
-		JsonObject base;
-		JsonArray materials;
-		StringBuilder materialsStr;
-		ContentValues values;
-		db.beginTransaction();
-		for(int i=0;i<bases.size();i++){
-			base=bases.get(i).getAsJsonObject();
-			values=new ContentValues();
-			values.put("id", base.get("id").getAsLong());
-			values.put("lat", base.get("la").getAsDouble());
-			values.put("lng", base.get("ln").getAsDouble());
-			materials=base.get("ms").getAsJsonArray();
-			materialsStr=new StringBuilder();
-			for(int j=0;j<materials.size();j++){
-				if(j>0){
-					materialsStr.append(",");
-				}
-				materialsStr.append(materials.get(j).getAsLong());
+	private boolean downloadImage(JsonObject image){
+		InputStream in=null;
+		FileOutputStream out=null;
+		try{
+			URL url=new URL(image.get("url").getAsString());
+			HttpURLConnection conn=(HttpURLConnection)url.openConnection();
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(10000);
+			conn.setRequestMethod("GET");
+			conn.setDoInput(true);
+			// Start download
+			conn.connect();
+			in=conn.getInputStream();
+			out=new FileOutputStream(new File(this.startActivity.getFilesDir(), "images"+File.separator+image.get("name").getAsString()));
+			byte[] buffer=new byte[4096];
+			int size;
+			while((size=in.read(buffer, 0, buffer.length))!=-1){
+				out.write(buffer, 0, size);
 			}
-			values.put("materials", materialsStr.toString());
-			// Insert the new row, returning the primary key value of the new row
-			db.insert("material_base", null, values);
+			out.flush();
+			return true;
+		}catch(IOException e){
+			e.printStackTrace();
+			return false;
+		}finally{
+			try{
+				if(in != null){
+					in.close();
+				}
+				if(out != null){
+					out.close();
+				}
+			}catch(IOException e){
+				e.printStackTrace();
+				return false;
+			}
 		}
-		db.setTransactionSuccessful();
-		db.endTransaction();
-		return true;
 	}
 }

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import com.google.gson.JsonArray;
 public class Start extends Activity{
 	// Resources version
 	private int localResourcesVersion=-1;
@@ -140,13 +141,23 @@ public class Start extends Activity{
 	// Load updated resources from server
 	private void loadResources(){
 		if(Network.isOnline(this)){
-			(new MaterialsLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterials");
-			(new MaterialBasesLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterialBases");
+			(new ImagesLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetImages");
 		}else{
 			Network.showNetworkUnavailable(this);
 		}
 	}
-		public void loadResourcesCallback(boolean result){
+		public void loadImagesProgress(int percentage){
+			System.out.println(percentage);
+		}
+		public void loadImagesFinished(boolean result){
+			if(result){
+				(new MaterialsLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterials");
+				(new MaterialBasesLoader(this)).execute("http://big-cook.appspot.com/exe/api/GetMaterialBases");
+			}else{
+				ShareUI.alert(this, "Load Failed");
+			}
+		}
+		public void loadResourcesFinished(boolean result){
 			if(result){
 				this.loadedResources++;
 				if(this.loadedResources>=this.totalResources){

@@ -228,6 +228,14 @@
 	<url-pattern>/exe/api/GetResourcesVersion</url-pattern>
 </servlet-mapping>
 <servlet>
+	<servlet-name>api.GetImages</servlet-name>
+	<servlet-class>pada.servlet.api.GetImages</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>api.GetImages</servlet-name>
+	<url-pattern>/exe/api/GetImages</url-pattern>
+</servlet-mapping>
+<servlet>
 	<servlet-name>api.GetMaterials</servlet-name>
 	<servlet-class>pada.servlet.api.GetMaterials</servlet-class>
 </servlet>

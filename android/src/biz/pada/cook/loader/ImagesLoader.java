@@ -91,7 +91,18 @@ public class ImagesLoader extends AsyncTask<String, Integer, Boolean>{
 			// Start download
 			conn.connect();
 			in=conn.getInputStream();
-			out=new FileOutputStream(new File(this.startActivity.getFilesDir(), "images"+File.separator+image.get("name").getAsString()));
+			File dir=new File(this.startActivity.getFilesDir(), "images");
+			if(!dir.isDirectory()){
+				if(!dir.mkdir()){
+					return false;
+				}
+			}
+			File file=new File(dir, image.get("name").getAsString());
+			if(file.exists()){
+				file.delete();
+			}
+			file.createNewFile();
+			out=new FileOutputStream(file);
 			byte[] buffer=new byte[4096];
 			int size;
 			while((size=in.read(buffer, 0, buffer.length))!=-1){

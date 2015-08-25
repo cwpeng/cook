@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.graphics.BitmapFactory;
+import java.io.File;
 public class ActionFragment extends Fragment{
 	public Base base;
 	public CountDownTimer timer;
@@ -36,6 +39,8 @@ public class ActionFragment extends Fragment{
 				Base.State state=this.base.getState();
 				// Add title
 				Material material=Material.getMaterial(activity, state.currentMaterialId);
+				ImageView icon=(ImageView)activity.findViewById(R.id.action_fragment_icon);
+				icon.setImageBitmap(BitmapFactory.decodeFile(activity.getFilesDir().getAbsolutePath()+File.separator+"images"+File.separator+"material-"+material.id));
 				TextView title=(TextView)activity.findViewById(R.id.action_fragment_title);
 				title.setText(material.name);
 				// Add content

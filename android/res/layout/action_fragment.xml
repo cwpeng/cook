@@ -31,10 +31,42 @@
 			android:onClick="clickCloseActionFragment"
 		/>
 	</LinearLayout>
+	<LinearLayout android:id="@+id/action_fragment_buttons"
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:layout_alignParentBottom="true"
+		android:weightSum="6"
+		android:orientation="horizontal">
+		<View
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+		</View>
+		<ImageView android:id="@+id/action_fragment_collect"
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="2"
+			android:scaleType="centerInside"
+			android:src="@drawable/collect"
+		/>
+		<ImageView android:id="@+id/action_fragment_backpack"
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="2"
+			android:scaleType="centerInside"
+			android:src="@drawable/backpack"
+		/>
+		<View
+			android:layout_width="0px"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+		</View>
+	</LinearLayout>
 	<LinearLayout android:id="@+id/action_fragment_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_below="@id/action_fragment_head"
+		android:layout_above="@id/action_fragment_buttons"
 		android:orientation="vertical">
 	</LinearLayout>
 </RelativeLayout>

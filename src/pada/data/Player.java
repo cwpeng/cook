@@ -10,6 +10,15 @@ import com.google.appengine.api.memcache.*;
 public class Player implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
+	public static boolean check(long id, String token){
+		try{
+			Entity player=DatastoreServiceFactory.getDatastoreService().get(KeyFactory.createKey("Player", id));
+			return player.getProperty("token").equals(token);
+		}catch(Exception e){
+			Logger.getLogger(Material.class.getName()).warning(e.toString());
+			return false;
+		}
+	}
 	public static long signup(String imei, String password, String name){
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();

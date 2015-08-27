@@ -28,6 +28,15 @@
 <listener>
 	<listener-class>pada.ContextListener</listener-class>
 </listener>
+<!-- Filter -->
+<filter>
+	<filter-name>filter.GameFilter</filter-name>
+	<filter-class>pada.filter.GameFilter</filter-class>
+</filter>
+<filter-mapping>
+	<filter-name>filter.GameFilter</filter-name>
+	<url-pattern>/exe/api/game/*</url-pattern>
+</filter-mapping>
 <!-- Upload Management -->
 <servlet>
 	<servlet-name>util.GetUploadURL</servlet-name>

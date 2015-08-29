@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 public class GenerateMaterialBases extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
-		pada.data.MaterialBase[] bases=pada.data.MaterialBase.generateMaterialBases();
+		pada.data.MaterialBase[] bases=pada.data.MaterialBase.generateAll();
 		/*
 		int count=0;
 		StringBuilder result=new StringBuilder();

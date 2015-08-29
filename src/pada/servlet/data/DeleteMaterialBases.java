@@ -10,7 +10,7 @@ public class DeleteMaterialBases extends HttpServlet{
 		request.setCharacterEncoding("utf-8");
 		int result;
 		while(true){
-			result=pada.data.MaterialBase.deleteMaterialBases();
+			result=pada.data.MaterialBase.deleteAll();
 			if(result<=0){ // Completed
 				break;
 			}

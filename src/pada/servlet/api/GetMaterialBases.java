@@ -12,7 +12,7 @@ public class GetMaterialBases extends HttpServlet{
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json");
 		PrintWriter out=response.getWriter();
-		out.print(pada.data.MaterialBase.getMaterialBasesJson());
+		out.print(pada.data.MaterialBase.getAllJson());
 		out.flush(); out.close();
 	}
 }

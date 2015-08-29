@@ -6,6 +6,7 @@ import java.util.ConcurrentModificationException;
 import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
+// GeometrySet data is read-only in Game. Only update offline (under maintenance).
 public class GeometrySet implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	public static boolean createGeometrySet(String name, String description, double[][] data){ // create new set by raw data

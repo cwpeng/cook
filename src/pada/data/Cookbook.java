@@ -7,6 +7,7 @@ import java.util.ConcurrentModificationException;
 import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
+// Cookbook data is read-only in Game. Only update offline (under maintenance).
 public class Cookbook implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method

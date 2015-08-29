@@ -8,6 +8,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
+// Image data is read-only in Game. Only update offline (under maintenance).
 public class Image implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method

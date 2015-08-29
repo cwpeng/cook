@@ -1,5 +1,6 @@
 package pada.data;
-import pada.data.action.CollectMaterial;
+import pada.data.*;
+import pada.data.action.*;
 import java.util.logging.Logger;
 import java.util.ConcurrentModificationException;
 import com.google.appengine.api.datastore.Query.*;
@@ -7,7 +8,13 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
 public class Game{
 	// Static Method
+	/*
+		Conditions of collect material:
+			1. In the distance.
+			2. Not in cooldown.
+	*/
 	public static boolean collectMaterial(Player player, long baseId, long materialId){
+		MaterialBase base=MaterialBase.get(baseId);
 		int retries=1;
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		while(true){

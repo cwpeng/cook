@@ -7,10 +7,31 @@ import java.util.ConcurrentModificationException;
 import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
+// MaterialBase data is read-only in Game. Only update offline (under maintenance).
 public class MaterialBase implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	// Static Method
-	public static int deleteMaterialBases(){
+	public static MaterialBase get(long id){
+		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
+		try{
+			Entity entity=datastore.get(KeyFactory.createKey("MaterialBase", id));
+			List<Long> materialList=(ArrayList<Long>)entity.getProperty("materials");
+			long[] materials=new long[materialList.size()];
+			for(int i=0;i<materials.length;i++){
+				materials[i]=materialList.get(i);
+			}
+			return new MaterialBase(
+				entity.getKey().getId(),
+				((Number)entity.getProperty("lat")).doubleValue(),
+				((Number)entity.getProperty("lng")).doubleValue(),
+				materials
+			);
+		}catch(Exception e){
+			Logger.getLogger(Cookbook.class.getName()).warning(e.toString());
+			return null;
+		}
+	}
+	public static int deleteAll(){
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBase").setKeysOnly();
 		Iterable<Entity> entities=datastore.prepare(query).asIterable(FetchOptions.Builder.withChunkSize(1000));
@@ -26,7 +47,7 @@ public class MaterialBase implements java.io.Serializable{
 		datastore.delete(keys);
 		return keys.size();
 	}
-	public static MaterialBase[] generateMaterialBases(){
+	public static MaterialBase[] generateAll(){
 		Material[] materials=Material.getMaterials();
 		List<MaterialBase> baseList=new ArrayList<MaterialBase>(32768);
 		GeometrySet geometrySet;
@@ -159,7 +180,7 @@ public class MaterialBase implements java.io.Serializable{
 				return false;
 			}
 		}
-	public static Entity getMaterialBaseSummary(){
+	public static Entity getAllSummary(){
 		// Check if any entity exists
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBase").setKeysOnly();
@@ -181,7 +202,7 @@ public class MaterialBase implements java.io.Serializable{
 		baseKind.setProperty("generated", bases.size()>0);
 		return baseKind;
 	}
-	public static String getMaterialBasesJson(){
+	public static String getAllJson(){
 		DatastoreService datastore=DatastoreServiceFactory.getDatastoreService();
 		Query query=new Query("MaterialBaseCache");
 		List<Entity> caches=datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());

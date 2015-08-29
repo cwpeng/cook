@@ -9,7 +9,7 @@ import com.google.appengine.api.datastore.Entity;
 public class GetMaterialBaseSummary extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("utf-8");
-		Entity summary=pada.data.MaterialBase.getMaterialBaseSummary();
+		Entity summary=pada.data.MaterialBase.getAllSummary();
 		long count=((Long)summary.getProperty("count")).longValue();
 		long updateTime=((java.util.Date)summary.getProperty("timestamp")).getTime();
 		// Make Output
